@@ -42,11 +42,11 @@ const LoginPage: NextPage = () => {
             className='container m-auto items-center justify-center gap-4'
             showHeader={false}
         >
-            <div className='flex w-full flex-col items-center py-6 md:w-96'>
+            <div className='flex w-full flex-col items-center rounded-md md:border p-6 md:w-96 md:shadow-sm'>
                 <h1 className='mb-2 text-4xl font-bold text-zinc-700'>
                     Welcome!
                 </h1>
-                <p className='mb-10 text-lg'>Login to access dental records</p>
+                <p className='mb-10 text-lg text-zinc-500'>Login to access dental records</p>
                 <button
                     className='flex w-full items-center justify-center gap-2 rounded bg-zinc-700 px-6 py-3 text-zinc-200 transition-colors hover:bg-zinc-800'
                     onClick={() => void handleSignIn()}
