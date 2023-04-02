@@ -55,6 +55,10 @@ model User {
     image         String?
     accounts      Account[]
     sessions      Session[]
+    clinicId      String?
+    clinic        Clinic?   @relation(fields: [clinicId], references: [id])
+
+    @@index([clinicId])
 }
 
 model VerificationToken {
@@ -63,4 +67,13 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model Clinic {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    name      String
+    address   String
+    User      User[]
 }
