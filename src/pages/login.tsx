@@ -40,11 +40,11 @@ const LoginPage: NextPage = () => {
     return (
         <MainLayout showSidebar={false}>
             <main className='container m-auto flex flex-1 flex-col items-center justify-center gap-4 '>
-                <div className='flex w-full flex-col items-center rounded-md bg-zinc-50 p-6 md:w-96 md:border md:shadow-sm'>
+                <div className='mx-4 flex flex-col items-center rounded-md border bg-zinc-50 p-6 shadow md:mx-0 md:w-96'>
                     <h1 className='mb-2 text-4xl font-bold text-zinc-700'>
                         Welcome!
                     </h1>
-                    <p className='mb-10 text-lg text-zinc-500'>
+                    <p className='mb-10 text-zinc-500'>
                         Login to access dental records
                     </p>
                     <button
