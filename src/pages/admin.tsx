@@ -1,12 +1,12 @@
-import type { GetServerSideProps, NextPage } from 'next';
+import type { GetServerSideProps } from 'next';
 import MainLayout from '~/components/MainLayout';
 import { getServerAuthSession } from '~/server/auth';
-import { isUserAdmin } from '~/server/utils/isUserAdmin';
+import type { NextPageWithLayout } from './_app';
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const session = await getServerAuthSession(ctx);
 
-    if (!session || !session.user.email) {
+    if (!session) {
         return {
             redirect: {
                 destination: '/login',
@@ -15,11 +15,15 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
         };
     }
 
-    return { props: { isAdmin: isUserAdmin(session.user.email) } };
+    return { props: {} };
 };
 
-const AdminPage: NextPage<{ isAdmin: boolean }> = ({ isAdmin }) => {
-    return <MainLayout isAdmin={isAdmin}>Admin</MainLayout>;
+const AdminPage: NextPageWithLayout = () => {
+    return <div>Admin</div>
+};
+
+AdminPage.getLayout = (page) => {
+    return <MainLayout>{page}</MainLayout>;
 };
 
 export default AdminPage;

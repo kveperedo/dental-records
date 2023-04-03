@@ -1,7 +1,6 @@
 import type { GetServerSideProps, NextPage } from 'next';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/router';
-import MainLayout from '~/components/MainLayout';
 import { getServerAuthSession } from '~/server/auth';
 import { GoogleLogo } from '@phosphor-icons/react';
 
@@ -38,8 +37,8 @@ const LoginPage: NextPage = () => {
     };
 
     return (
-        <MainLayout showSidebar={false}>
-            <main className='container m-auto flex flex-1 flex-col items-center justify-center gap-4 '>
+        <div className='h-screen bg-zinc-100'>
+            <main className='container h-screen m-auto flex flex-1 flex-col items-center justify-center gap-4'>
                 <div className='mx-4 flex flex-col items-center rounded-md border bg-zinc-50 p-6 shadow md:mx-0 md:w-96'>
                     <h1 className='mb-2 text-4xl font-bold text-zinc-700'>
                         Welcome!
@@ -59,7 +58,8 @@ const LoginPage: NextPage = () => {
                     </button>
                 </div>
             </main>
-        </MainLayout>
+        </div>
+
     );
 };
 

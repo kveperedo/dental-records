@@ -1,49 +1,34 @@
 import type { PropsWithChildren } from 'react';
 
-import { Inter } from 'next/font/google';
 import { twMerge } from 'tailwind-merge';
 import { signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import AnchorLinks from './AnchorLinks';
-
-const sansFont = Inter({
-    subsets: ['latin'],
-    variable: '--font-sans',
-});
+import { api } from '~/utils/api';
+import Loading from './Loading';
 
 type MainLayoutProps = PropsWithChildren<{
-    showSidebar?: boolean;
+    showHeader?: boolean;
     className?: string;
-    isAdmin?: boolean;
 }>;
 
-const MainLayout = ({
-    children,
-    showSidebar = true,
-    isAdmin = false,
-    className,
-}: MainLayoutProps) => {
+const MainLayout = ({ children, className }: MainLayoutProps) => {
     const { data: sessionData } = useSession();
+    const { data: isAdmin, isLoading } = api.admin.isAdmin.useQuery();
+
+    if (isLoading || isAdmin === undefined) {
+        return <Loading />;
+    }
 
     return (
-        <div
-            className={twMerge(
-                'flex min-h-screen',
-                sansFont.className,
-                'font-sans'
-            )}
-        >
-            {showSidebar && sessionData && (
-                <aside className='flex w-72 flex-col items-center border-r border-zinc-200 bg-zinc-50 p-6'>
-                    <span className='mb-8 flex self-start text-xl font-semibold'>
-                        Dental Records
-                    </span>
-
+        <div className='flex min-h-screen flex-col'>
+            {sessionData && (
+                <header className='flex items-stretch justify-between border-b border-zinc-200 bg-zinc-50 px-8'>
                     <AnchorLinks isAdmin={isAdmin} />
                     {sessionData && (
                         <button
                             onClick={() => void signOut()}
-                            className='mt-auto flex w-full items-center justify-center gap-3 rounded border border-zinc-200 px-6 py-2 font-medium text-zinc-600 transition-colors hover:border-zinc-400 hover:bg-zinc-100'
+                            className='my-2 flex items-center justify-center gap-3 rounded border border-zinc-200 px-6 py-2 font-medium text-zinc-600 transition-colors hover:border-zinc-400 hover:bg-zinc-100'
                         >
                             {sessionData.user.image && (
                                 <Image
@@ -57,7 +42,7 @@ const MainLayout = ({
                             <span>Sign out</span>
                         </button>
                     )}
-                </aside>
+                </header>
             )}
             <main
                 className={twMerge(

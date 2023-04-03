@@ -14,10 +14,10 @@ const Link = ({
     return (
         <a
             className={twMerge(
-                'flex w-full cursor-pointer items-center gap-4 rounded border border-transparent px-6 py-4  text-zinc-600 transition-colors',
+                'relative flex w-full cursor-pointer items-center gap-3 whitespace-nowrap px-4 text-zinc-500 transition-colors hover:bg-zinc-100',
                 router.pathname === href
-                    ? 'shadow-inner- border-zinc-200 bg-zinc-200 font-semibold text-zinc-800'
-                    : ' hover:bg-zinc-100 hover:text-zinc-800'
+                    ? 'font-semibold text-zinc-700 before:absolute before:bottom-[-1px] before:left-0 before:block before:h-[1px] before:w-full before:bg-zinc-700'
+                    : ' hover:text-zinc-800'
             )}
             onClick={() => void router.push(href)}
         >
@@ -29,7 +29,7 @@ const Link = ({
 
 const AnchorLinks = ({ isAdmin }: { isAdmin: boolean }) => {
     return (
-        <ul className='flex w-full flex-col gap-2'>
+        <ul className='mr-auto flex'>
             <Link href='/' Icon={AddressBook}>
                 Records
             </Link>
