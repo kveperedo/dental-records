@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google';
 import { twMerge } from 'tailwind-merge';
 import { signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
+import Sidebar from './Sidebar';
 
 const sansFont = Inter({
     subsets: ['latin'],
@@ -11,13 +12,15 @@ const sansFont = Inter({
 });
 
 type MainLayoutProps = PropsWithChildren<{
-    showHeader?: boolean;
+    showSidebar?: boolean;
     className?: string;
+    isAdmin?: boolean;
 }>;
 
 const MainLayout = ({
     children,
-    showHeader = true,
+    showSidebar = true,
+    isAdmin = false,
     className,
 }: MainLayoutProps) => {
     const { data: sessionData } = useSession();
@@ -25,20 +28,22 @@ const MainLayout = ({
     return (
         <div
             className={twMerge(
-                'flex min-h-screen flex-col',
+                'flex min-h-screen',
                 sansFont.className,
                 'font-sans'
             )}
         >
-            {showHeader && sessionData && (
-                <header className='flex items-center justify-between border-b border-zinc-200 bg-zinc-50 px-8 py-4'>
-                    <span className='flex items-center gap-2 font-semibold'>
+            {showSidebar && sessionData && (
+                <aside className='flex w-72 flex-col items-center border-r border-zinc-200 bg-zinc-50 p-6'>
+                    <span className='mb-8 flex self-start text-xl font-semibold'>
                         Dental Records
                     </span>
+
+                    <Sidebar isAdmin={isAdmin} />
                     {sessionData && (
                         <button
                             onClick={() => void signOut()}
-                            className='flex items-center gap-3 rounded border border-zinc-200 px-6 py-2 font-medium text-zinc-600 transition-colors hover:border-zinc-400 hover:bg-zinc-100'
+                            className='mt-auto flex w-full items-center justify-center gap-3 rounded border border-zinc-200 px-6 py-2 font-medium text-zinc-600 transition-colors hover:border-zinc-400 hover:bg-zinc-100'
                         >
                             {sessionData.user.image && (
                                 <Image
@@ -52,7 +57,7 @@ const MainLayout = ({
                             <span>Sign out</span>
                         </button>
                     )}
-                </header>
+                </aside>
             )}
             <main
                 className={twMerge(
