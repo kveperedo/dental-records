@@ -27,7 +27,7 @@ const Link = ({
     );
 };
 
-const Sidebar = ({ isAdmin }: { isAdmin: boolean }) => {
+const AnchorLinks = ({ isAdmin }: { isAdmin: boolean }) => {
     return (
         <ul className='flex w-full flex-col gap-2'>
             <Link href='/' Icon={AddressBook}>
@@ -42,4 +42,4 @@ const Sidebar = ({ isAdmin }: { isAdmin: boolean }) => {
     );
 };
 
-export default Sidebar;
+export default AnchorLinks;

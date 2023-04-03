@@ -4,7 +4,7 @@ import { Inter } from 'next/font/google';
 import { twMerge } from 'tailwind-merge';
 import { signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
-import Sidebar from './Sidebar';
+import AnchorLinks from './AnchorLinks';
 
 const sansFont = Inter({
     subsets: ['latin'],
@@ -39,7 +39,7 @@ const MainLayout = ({
                         Dental Records
                     </span>
 
-                    <Sidebar isAdmin={isAdmin} />
+                    <AnchorLinks isAdmin={isAdmin} />
                     {sessionData && (
                         <button
                             onClick={() => void signOut()}
