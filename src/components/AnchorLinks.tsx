@@ -22,7 +22,7 @@ const Link = ({
             onClick={() => void router.push(href)}
         >
             <Icon className='h-6 w-6 text-inherit' weight='duotone' />
-            {children}
+            <span className='hidden sm:block'>{children}</span>
         </a>
     );
 };
