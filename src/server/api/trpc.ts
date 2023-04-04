@@ -68,6 +68,7 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
 import { initTRPC, TRPCError } from '@trpc/server';
 import superjson from 'superjson';
 import { ZodError } from 'zod';
+import { isUserAdmin } from '../utils/isUserAdmin';
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
     transformer: superjson,
@@ -130,3 +131,17 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
  * @see https://trpc.io/docs/procedures
  */
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
+
+const enforceUserIsAdmin = t.middleware(({ ctx, next }) => {
+    if (!ctx.session?.user?.email) {
+        throw new TRPCError({ code: 'UNAUTHORIZED' });
+    }
+
+    if (!isUserAdmin(ctx.session.user.email)) {
+        throw new TRPCError({ code: 'UNAUTHORIZED' });
+    }
+
+    return next();
+});
+
+export const adminProcedure = protectedProcedure.use(enforceUserIsAdmin);
