@@ -17,11 +17,15 @@ const MainLayout = ({ children, className }: MainLayoutProps) => {
     const { data: isAdmin, isLoading } = api.admin.isAdmin.useQuery();
 
     if (isLoading || isAdmin === undefined) {
-        return <Loading />;
+        return (
+            <div className='h-screen w-screen'>
+                <Loading />
+            </div>
+        );
     }
 
     return (
-        <div className='flex min-h-screen flex-col'>
+        <div className='flex h-screen flex-col'>
             {sessionData && (
                 <header className='flex items-stretch justify-between border-b border-zinc-200 bg-zinc-50 px-8'>
                     <AnchorLinks isAdmin={isAdmin} />
@@ -46,7 +50,7 @@ const MainLayout = ({ children, className }: MainLayoutProps) => {
             )}
             <main
                 className={twMerge(
-                    'flex flex-1 flex-col bg-zinc-100',
+                    'flex flex-1 flex-col overflow-hidden bg-zinc-100',
                     className
                 )}
             >
