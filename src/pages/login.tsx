@@ -38,8 +38,8 @@ const LoginPage: NextPage = () => {
 
     return (
         <div className='h-screen bg-zinc-100'>
-            <main className='container h-screen m-auto flex flex-1 flex-col items-center justify-center gap-4'>
-                <div className='mx-4 flex flex-col items-center rounded-md border bg-zinc-50 p-6 shadow md:mx-0 md:w-96'>
+            <main className='container m-auto flex h-screen flex-1 flex-col items-center justify-center gap-4'>
+                <div className='mx-4 flex flex-col items-center rounded-md border border-zinc-200 bg-zinc-50 p-6 sm:mx-0 sm:w-96'>
                     <h1 className='mb-2 text-4xl font-bold text-zinc-700'>
                         Welcome!
                     </h1>
@@ -59,7 +59,6 @@ const LoginPage: NextPage = () => {
                 </div>
             </main>
         </div>
-
     );
 };
 
