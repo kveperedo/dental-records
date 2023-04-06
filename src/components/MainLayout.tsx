@@ -14,7 +14,9 @@ type MainLayoutProps = PropsWithChildren<{
 
 const MainLayout = ({ children, className }: MainLayoutProps) => {
     const { data: sessionData } = useSession();
-    const { data: isAdmin, isLoading } = api.admin.isAdmin.useQuery();
+    const { data: isAdmin, isLoading } = api.admin.isAdmin.useQuery(undefined, {
+        refetchOnWindowFocus: false,
+    });
 
     if (isLoading || isAdmin === undefined) {
         return (
