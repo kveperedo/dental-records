@@ -3,16 +3,33 @@ import { twMerge } from 'tailwind-merge';
 
 type InputProps = {
     startIcon?: React.ReactNode;
+    startIconClassName?: string;
     endIcon?: React.ReactNode;
+    endIconClassName?: string;
     containerClassName?: string;
 } & React.InputHTMLAttributes<HTMLInputElement>;
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-    ({ startIcon, endIcon, containerClassName, ...props }, ref) => {
+    (
+        {
+            startIcon,
+            endIcon,
+            containerClassName,
+            startIconClassName,
+            endIconClassName,
+            ...props
+        },
+        ref
+    ) => {
         return (
             <div className={twMerge('relative', containerClassName)}>
                 {startIcon && (
-                    <div className='pointer-events-none absolute flex h-10 w-10 items-center justify-center text-zinc-400'>
+                    <div
+                        className={twMerge(
+                            'pointer-events-none absolute flex h-10 w-10 items-center justify-center text-zinc-400',
+                            startIconClassName
+                        )}
+                    >
                         {startIcon}
                     </div>
                 )}
@@ -27,7 +44,12 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                     {...props}
                 />
                 {endIcon && (
-                    <div className='pointer-events-none absolute right-0 top-0 flex h-10 w-10 items-center justify-center text-zinc-400'>
+                    <div
+                        className={twMerge(
+                            'pointer-events-none absolute right-0 top-0 flex h-10 w-10 items-center justify-center text-zinc-400',
+                            endIconClassName
+                        )}
+                    >
                         {endIcon}
                     </div>
                 )}
