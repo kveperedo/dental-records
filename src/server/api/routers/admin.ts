@@ -16,22 +16,28 @@ export const adminRouter = createTRPCRouter({
 
         return isUserAdmin(ctx.session.user.email);
     }),
-    getClinicPageCount: adminProcedure.query(async ({ ctx }) => {
-        const count = await ctx.prisma.clinic.count();
+    getClinicPageCount: adminProcedure
+        .input(z.string().optional())
+        .query(async ({ ctx, input: searchTerm }) => {
+            const count = await ctx.prisma.clinic.count({
+                where: { name: { contains: searchTerm } },
+            });
 
-        return Math.ceil(count / MAX_NUMBER_OF_CLINICS_PER_QUERY);
-    }),
+            return Math.ceil(count / MAX_NUMBER_OF_CLINICS_PER_QUERY);
+        }),
     listClinics: adminProcedure
         .input(
             z.object({
                 pageNumber: z.number().min(1),
+                searchTerm: z.string().optional(),
             })
         )
-        .query(async ({ ctx, input: { pageNumber } }) => {
+        .query(async ({ ctx, input: { pageNumber, searchTerm } }) => {
             const clinics = await ctx.prisma.clinic.findMany({
                 skip: (pageNumber - 1) * MAX_NUMBER_OF_CLINICS_PER_QUERY,
                 take: MAX_NUMBER_OF_CLINICS_PER_QUERY,
                 orderBy: { name: 'asc' },
+                where: { name: { contains: searchTerm } },
             });
 
             return clinics;
