@@ -8,6 +8,8 @@ import '~/styles/globals.css';
 import type { ReactElement, ReactNode } from 'react';
 import type { NextPage } from 'next';
 import { Inter } from 'next/font/google';
+import Toaster from '~/components/Toaster';
+import Tooltip from '~/components/Tooltip';
 
 export type NextPageWithLayout<P = object, IP = P> = NextPage<P, IP> & {
     getLayout?: (page: ReactElement) => ReactNode;
@@ -32,7 +34,17 @@ const MyApp = ({
 
     return (
         <SessionProvider session={session}>
-            <div className={sansFont.className}>{layout}</div>
+            <Tooltip.Provider>
+                <div className={sansFont.className}>
+                    {layout}
+                    <Toaster />
+                    <style jsx global>{`
+                        :root {
+                            --font-sans: ${sansFont.style.fontFamily};
+                        }
+                    `}</style>
+                </div>
+            </Tooltip.Provider>
         </SessionProvider>
     );
 };
