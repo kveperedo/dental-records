@@ -17,7 +17,7 @@ const PaginationButton = ({
     return (
         <button
             className={twMerge(
-                'flex h-8 w-8 items-center justify-center rounded-full border border-transparent text-zinc-700',
+                'default-focus flex h-8 w-8 items-center justify-center rounded-full border border-transparent text-zinc-700',
                 isActive
                     ? 'border-zinc-600 bg-zinc-600 text-zinc-50'
                     : 'enabled:hover:bg-zinc-200',

@@ -5,3 +5,9 @@
 html {
     @apply font-sans text-zinc-900;
 }
+
+@layer components {
+    .default-focus {
+        @apply focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:ring-offset-2;
+    }
+}

@@ -36,7 +36,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                 <input
                     ref={ref}
                     className={twMerge(
-                        'h-10 w-full rounded border border-zinc-300 bg-zinc-100 px-6 py-2 transition-colors placeholder:text-zinc-400 hover:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:ring-offset-2',
+                        'default-focus h-10 w-full rounded border border-zinc-300 bg-zinc-100 px-6 py-2 transition-colors placeholder:text-zinc-400 hover:border-zinc-400',
                         startIcon && 'pl-12',
                         endIcon && 'pr-12'
                     )}
