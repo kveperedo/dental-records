@@ -34,8 +34,8 @@ const AnchorLinks = ({ isAdmin }: { isAdmin: boolean }) => {
                 Records
             </Link>
             {isAdmin && (
-                <Link href='/admin' Icon={FolderSimpleLock}>
-                    Admin Panel
+                <Link href='/clinic' Icon={FolderSimpleLock}>
+                    Clinic Panel
                 </Link>
             )}
         </ul>

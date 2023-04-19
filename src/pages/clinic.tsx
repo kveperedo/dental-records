@@ -65,24 +65,24 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     return { props: {} };
 };
 
-const AdminPage: NextPageWithLayout = () => {
+const ClinicPage: NextPageWithLayout = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [pageNumber, setPageNumber] = useState(1);
     const utils = api.useContext();
     const { data: pageCount } =
-        api.admin.getClinicPageCount.useQuery(searchTerm);
-    const { data, isLoading } = api.admin.listClinics.useQuery({
+        api.clinic.getClinicPageCount.useQuery(searchTerm);
+    const { data, isLoading } = api.clinic.listClinics.useQuery({
         pageNumber,
         searchTerm,
     });
     const { mutate: deleteClinic, isLoading: isDeletingClinic } =
-        api.admin.deleteClinic.useMutation({
+        api.clinic.deleteClinic.useMutation({
             onSuccess: () => {
                 toast({
                     title: 'Delete Clinic',
                     description: `Successfully deleted clinic.`,
                 });
-                void utils.admin.listClinics.invalidate();
+                void utils.clinic.listClinics.invalidate();
             },
         });
     const { toast } = useToast();
@@ -109,7 +109,7 @@ const AdminPage: NextPageWithLayout = () => {
     return (
         <>
             <Head>
-                <title>Admin Panel</title>
+                <title>Clinic Panel</title>
             </Head>
             <div className='flex h-full flex-1'>
                 <div className='m-2 flex w-full flex-col rounded border border-zinc-200 bg-zinc-50 sm:mx-auto sm:my-8 sm:w-[768px]'>
@@ -138,11 +138,8 @@ const AdminPage: NextPageWithLayout = () => {
 
                     <main className='flex h-32 flex-1 flex-col overflow-hidden'>
                         <div className='flex border-b border-zinc-200 shadow-sm'>
-                            <div className='basis-3/6 px-4 py-2 text-left text-sm font-semibold text-zinc-700'>
+                            <div className='basis-5/6 px-4 py-2 text-left text-sm font-semibold text-zinc-700'>
                                 Clinic Name
-                            </div>
-                            <div className='basis-2/6 px-4 py-2 text-left text-sm font-semibold text-zinc-700'>
-                                Address
                             </div>
                             <div className='basis-1/6 px-4 py-2 text-center text-sm font-semibold text-zinc-700'></div>
                         </div>
@@ -164,21 +161,12 @@ const AdminPage: NextPageWithLayout = () => {
                                             >
                                                 <div
                                                     className={twMerge(
-                                                        'basis-3/6 border-b border-zinc-200 px-4 py-4',
+                                                        'basis-5/6 border-b border-zinc-200 px-4 py-4',
                                                         isLast &&
                                                             'border-transparent'
                                                     )}
                                                 >
                                                     {clinic.name}
-                                                </div>
-                                                <div
-                                                    className={twMerge(
-                                                        'basis-2/6 border-b border-zinc-200 px-4 py-4',
-                                                        isLast &&
-                                                            'border-transparent'
-                                                    )}
-                                                >
-                                                    {clinic.address}
                                                 </div>
                                                 <div
                                                     className={twMerge(
@@ -217,8 +205,8 @@ const AdminPage: NextPageWithLayout = () => {
     );
 };
 
-AdminPage.getLayout = (page) => {
+ClinicPage.getLayout = (page) => {
     return <MainLayout>{page}</MainLayout>;
 };
 
-export default AdminPage;
+export default ClinicPage;
