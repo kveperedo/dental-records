@@ -3,6 +3,7 @@ import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { getServerAuthSession } from '~/server/auth';
 import { GoogleLogo } from '@phosphor-icons/react';
+import { Button } from '~/components/Button';
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const session = await getServerAuthSession(ctx);
@@ -46,16 +47,13 @@ const LoginPage: NextPage = () => {
                     <p className='mb-10 text-zinc-500'>
                         Login to access dental records
                     </p>
-                    <button
-                        className='flex w-full items-center justify-center gap-2 rounded bg-zinc-700 px-6 py-3 text-zinc-200 transition-colors hover:bg-zinc-800'
-                        onClick={() => void handleSignIn()}
-                    >
+                    <Button onClick={() => void handleSignIn()}>
                         <GoogleLogo
                             weight='bold'
-                            className='h-6 w-6 text-inherit'
+                            className='mr-2 h-6 w-6 text-inherit'
                         />
                         <span>Sign in with Google</span>
-                    </button>
+                    </Button>
                 </div>
             </main>
         </div>
