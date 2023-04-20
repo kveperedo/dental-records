@@ -11,11 +11,15 @@ const Link = ({
 }: PropsWithChildren<{ href: string; Icon: Icon }>) => {
     const router = useRouter();
 
+    const routes = router.route.split('/').filter(Boolean);
+    const hrefRoute = href.split('/').filter(Boolean)[0];
+    const isActive = routes.includes(hrefRoute ?? '');
+
     return (
         <a
             className={twMerge(
                 'relative flex w-full cursor-pointer items-center gap-3 whitespace-nowrap px-4 text-zinc-500 transition-colors hover:bg-zinc-100',
-                router.pathname === href
+                isActive
                     ? 'font-semibold text-zinc-700 before:absolute before:bottom-[-1px] before:left-0 before:block before:h-[1px] before:w-full before:bg-zinc-700'
                     : ' hover:text-zinc-800'
             )}
