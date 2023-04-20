@@ -15,21 +15,22 @@ import Head from 'next/head';
 import AlertDialog from '~/components/AlertDialog';
 import { useToast } from '~/hooks/useToast';
 import Tooltip from '~/components/Tooltip';
+import { useRouter } from 'next/router';
+import { Button } from '~/components/Button';
 
-const RemoveClinicDialog = ({ onConfirm }: { onConfirm: () => void }) => {
+type RemoveClinicDialogProps = {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    onConfirm: () => void;
+};
+
+const RemoveClinicDialog = ({
+    onConfirm,
+    onOpenChange,
+    open,
+}: RemoveClinicDialogProps) => {
     return (
-        <AlertDialog.Root>
-            <Tooltip.Root>
-                <Tooltip.Trigger asChild>
-                    <AlertDialog.Trigger asChild>
-                        <button className='default-focus m-auto flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-zinc-200 active:bg-zinc-300'>
-                            <Trash weight='fill' className='text-zinc-600' />
-                        </button>
-                    </AlertDialog.Trigger>
-                </Tooltip.Trigger>
-                <Tooltip.Content>Delete Clinic</Tooltip.Content>
-            </Tooltip.Root>
-
+        <AlertDialog.Root open={open} onOpenChange={onOpenChange}>
             <AlertDialog.Content>
                 <AlertDialog.Header>
                     <AlertDialog.Title>Remove Clinic?</AlertDialog.Title>
@@ -66,6 +67,10 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 };
 
 const ClinicPage: NextPageWithLayout = () => {
+    const router = useRouter();
+    const [clinicIdToRemove, setClinicIdToRemove] = useState<string | null>(
+        null
+    );
     const [searchTerm, setSearchTerm] = useState('');
     const [pageNumber, setPageNumber] = useState(1);
     const utils = api.useContext();
@@ -82,7 +87,7 @@ const ClinicPage: NextPageWithLayout = () => {
                     title: 'Delete Clinic',
                     description: `Successfully deleted clinic.`,
                 });
-                void utils.clinic.listClinics.invalidate();
+                void utils.clinic.invalidate();
             },
         });
     const { toast } = useToast();
@@ -106,6 +111,12 @@ const ClinicPage: NextPageWithLayout = () => {
         }
     };
 
+    const handleDeleteClinic = () => {
+        if (clinicIdToRemove) {
+            deleteClinic(clinicIdToRemove);
+        }
+    };
+
     return (
         <>
             <Head>
@@ -114,10 +125,12 @@ const ClinicPage: NextPageWithLayout = () => {
             <div className='flex h-full flex-1'>
                 <div className='m-2 flex w-full flex-col rounded border border-zinc-200 bg-zinc-50 sm:mx-auto sm:my-8 sm:w-[768px]'>
                     <header className='mb-6 flex items-center justify-between gap-4 p-4'>
-                        <button className='flex items-center justify-center gap-2 rounded bg-zinc-700 p-2 text-zinc-200 transition-colors hover:bg-zinc-800 sm:px-6 sm:py-2'>
+                        <Button>
                             <ListPlus className='h-6 w-6 text-inherit' />
-                            <span className='hidden sm:block'>Add Clinic</span>
-                        </button>
+                            <span className='ml-2 hidden sm:block'>
+                                Add Clinic
+                            </span>
+                        </Button>
                         <form onSubmit={handleSearch}>
                             <Input
                                 name='searchTerm'
@@ -156,7 +169,13 @@ const ClinicPage: NextPageWithLayout = () => {
 
                                         return (
                                             <div
-                                                className='flex cursor-pointer transition-colors hover:bg-zinc-100 active:bg-zinc-200'
+                                                tabIndex={0}
+                                                onClick={() =>
+                                                    void router.push(
+                                                        `/clinic/${clinic.id}`
+                                                    )
+                                                }
+                                                className='flex cursor-pointer transition-colors hover:bg-zinc-100 focus:bg-zinc-100 focus:outline-none active:bg-zinc-200'
                                                 key={clinic.id}
                                             >
                                                 <div
@@ -175,13 +194,32 @@ const ClinicPage: NextPageWithLayout = () => {
                                                             'border-transparent'
                                                     )}
                                                 >
-                                                    <RemoveClinicDialog
-                                                        onConfirm={() =>
-                                                            deleteClinic(
-                                                                clinic.id
-                                                            )
-                                                        }
-                                                    />
+                                                    <Tooltip.Root>
+                                                        <Tooltip.Trigger
+                                                            asChild
+                                                        >
+                                                            <Button
+                                                                className='m-auto h-8 w-8 rounded-full p-0 text-base'
+                                                                variant='ghost'
+                                                                onClick={(
+                                                                    event
+                                                                ) => {
+                                                                    event.stopPropagation();
+                                                                    setClinicIdToRemove(
+                                                                        clinic.id
+                                                                    );
+                                                                }}
+                                                            >
+                                                                <Trash
+                                                                    weight='fill'
+                                                                    className='text-inherit'
+                                                                />
+                                                            </Button>
+                                                        </Tooltip.Trigger>
+                                                        <Tooltip.Content>
+                                                            Delete Clinic
+                                                        </Tooltip.Content>
+                                                    </Tooltip.Root>
                                                 </div>
                                             </div>
                                         );
@@ -201,6 +239,11 @@ const ClinicPage: NextPageWithLayout = () => {
                     </footer>
                 </div>
             </div>
+            <RemoveClinicDialog
+                open={Boolean(clinicIdToRemove)}
+                onOpenChange={() => setClinicIdToRemove(null)}
+                onConfirm={handleDeleteClinic}
+            />
         </>
     );
 };
