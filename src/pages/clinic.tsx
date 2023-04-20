@@ -12,44 +12,11 @@ import { twMerge } from 'tailwind-merge';
 import Input from '~/components/Input';
 import Loading from '~/components/Loading';
 import Head from 'next/head';
-import AlertDialog from '~/components/AlertDialog';
 import { useToast } from '~/hooks/useToast';
 import Tooltip from '~/components/Tooltip';
 import { useRouter } from 'next/router';
 import { Button } from '~/components/Button';
-
-type RemoveClinicDialogProps = {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-    onConfirm: () => void;
-};
-
-const RemoveClinicDialog = ({
-    onConfirm,
-    onOpenChange,
-    open,
-}: RemoveClinicDialogProps) => {
-    return (
-        <AlertDialog.Root open={open} onOpenChange={onOpenChange}>
-            <AlertDialog.Content>
-                <AlertDialog.Header>
-                    <AlertDialog.Title>Remove Clinic?</AlertDialog.Title>
-                    <AlertDialog.Description>
-                        Are you sure you want to remove this clinic? All users
-                        linked will not have access to the clinic&apos;s records
-                        anymore.
-                    </AlertDialog.Description>
-                </AlertDialog.Header>
-                <AlertDialog.Footer>
-                    <AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
-                    <AlertDialog.Action onClick={onConfirm}>
-                        Remove clinic
-                    </AlertDialog.Action>
-                </AlertDialog.Footer>
-            </AlertDialog.Content>
-        </AlertDialog.Root>
-    );
-};
+import RemoveClinicDialog from '~/feature/clinic/RemoveClinicDialog';
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const session = await getServerAuthSession(ctx);
