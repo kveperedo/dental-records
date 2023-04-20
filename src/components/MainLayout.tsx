@@ -6,6 +6,7 @@ import Image from 'next/image';
 import AnchorLinks from './AnchorLinks';
 import { api } from '~/utils/api';
 import Loading from './Loading';
+import { Button } from './Button';
 
 type MainLayoutProps = PropsWithChildren<{
     showHeader?: boolean;
@@ -32,13 +33,14 @@ const MainLayout = ({ children, className }: MainLayoutProps) => {
                 <header className='flex items-stretch justify-between border-b border-zinc-200 bg-zinc-50 px-8'>
                     <AnchorLinks isAdmin={isAdmin} />
                     {sessionData && (
-                        <button
+                        <Button
+                            className='my-2'
+                            variant='outline'
                             onClick={() => void signOut()}
-                            className='my-2 flex items-center justify-center gap-3 rounded border border-zinc-200 px-6 py-2 font-medium text-zinc-600 transition-colors hover:border-zinc-400 hover:bg-zinc-100'
                         >
                             {sessionData.user.image && (
                                 <Image
-                                    className='rounded-full'
+                                    className='rounded-full mr-2'
                                     src={sessionData.user.image}
                                     alt='user image'
                                     width={24}
@@ -46,7 +48,7 @@ const MainLayout = ({ children, className }: MainLayoutProps) => {
                                 />
                             )}
                             <span>Sign out</span>
-                        </button>
+                        </Button>
                     )}
                 </header>
             )}
