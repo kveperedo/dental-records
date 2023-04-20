@@ -12,10 +12,10 @@ type ScrollbarProps = {
 
 const Scrollbar = ({ orientation }: ScrollbarProps) => (
     <ScrollAreaPrimitive.Scrollbar
-        className='flex touch-none select-none bg-zinc-200 p-0.5 transition-colors duration-[160ms] ease-out hover:bg-zinc-300 data-[orientation=horizontal]:h-2.5 data-[orientation=vertical]:w-2.5 data-[orientation=horizontal]:flex-col'
+        className='flex touch-none select-none p-0.5 transition-colors duration-[160ms] ease-out data-[orientation=horizontal]:h-2.5 data-[orientation=vertical]:w-2.5 data-[orientation=horizontal]:flex-col'
         orientation={orientation}
     >
-        <ScrollAreaPrimitive.Thumb className='before:content relative flex-1 rounded-[10px] bg-zinc-400 before:absolute before:left-1/2 before:top-1/2 before:h-full before:min-h-[44px] before:w-full before:min-w-[44px] before:-translate-x-1/2 before:-translate-y-1/2' />
+        <ScrollAreaPrimitive.Thumb className='before:content relative flex-1 rounded-[10px] bg-zinc-300/70 before:absolute before:left-1/2 before:top-1/2 before:h-full before:min-h-[44px] before:w-full before:min-w-[44px] before:-translate-x-1/2 before:-translate-y-1/2' />
     </ScrollAreaPrimitive.Scrollbar>
 );
 
