@@ -3,6 +3,7 @@
 import * as AlertDialogPrimitive from '@radix-ui/react-alert-dialog';
 import { forwardRef } from 'react';
 import { twMerge } from 'tailwind-merge';
+import { Button } from './Button';
 
 //  ---------------------------------------
 //  Root
@@ -145,30 +146,26 @@ const Action = forwardRef<
     React.ElementRef<typeof AlertDialogPrimitive.Action>,
     React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Action>
 >(({ className, ...props }, ref) => (
-    <AlertDialogPrimitive.Action
-        ref={ref}
-        className={twMerge(
-            'default-focus inline-flex h-10 items-center justify-center rounded-md bg-zinc-700 px-4 py-2 text-sm font-semibold text-zinc-50 transition-colors hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-50',
-            className
-        )}
-        {...props}
-    />
+    <AlertDialogPrimitive.Action ref={ref} asChild>
+        <Button className={className} {...props} />
+    </AlertDialogPrimitive.Action>
 ));
 Action.displayName = AlertDialogPrimitive.Action.displayName;
 
 const Cancel = forwardRef<
     React.ElementRef<typeof AlertDialogPrimitive.Cancel>,
     React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Cancel>
->(({ className, ...props }, ref) => (
-    <AlertDialogPrimitive.Cancel
-        ref={ref}
-        className={twMerge(
-            'default-focus mt-2 inline-flex h-10 items-center justify-center rounded-md border border-zinc-200 bg-transparent px-4 py-2 text-sm font-semibold text-zinc-700 transition-colors hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-50 sm:mt-0',
-            className
-        )}
-        {...props}
-    />
-));
+>(({ className, ...props }, ref) => {
+    return (
+        <AlertDialogPrimitive.Cancel ref={ref} asChild>
+            <Button
+                variant='outline'
+                className={twMerge('mt-2 sm:mt-0', className)}
+                {...props}
+            />
+        </AlertDialogPrimitive.Cancel>
+    );
+});
 Cancel.displayName = AlertDialogPrimitive.Cancel.displayName;
 
 const AlertDialog = {
