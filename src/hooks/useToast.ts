@@ -3,6 +3,7 @@ import type { ToastActionElement, ToastProps } from '~/components/Toast';
 
 const TOAST_LIMIT = 3;
 const TOAST_REMOVE_DELAY = 1000;
+const TOAST_DURATION = 5000;
 
 type ToasterToast = ToastProps & {
     id: string;
@@ -148,6 +149,7 @@ const toast = ({ ...props }: Toast) => {
     dispatch({
         type: 'ADD_TOAST',
         toast: {
+            duration: TOAST_DURATION,
             ...props,
             id,
             open: true,
