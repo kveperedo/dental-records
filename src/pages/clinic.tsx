@@ -147,9 +147,14 @@ const ClinicPage: NextPageWithLayout = () => {
                                 <EmptyContent
                                     title='No clinic found'
                                     description='Please try again with a different search term'
-                                    actionText='Clear Search'
-                                    onClick={handleResetSearch}
-                                />
+                                >
+                                    <Button
+                                        variant='outline'
+                                        onClick={handleResetSearch}
+                                    >
+                                        Clear Search
+                                    </Button>
+                                </EmptyContent>
                             </div>
                         ) : (
                             <ScrollArea.Root>

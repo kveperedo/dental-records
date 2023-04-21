@@ -56,7 +56,6 @@ const ClinicSlugPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
     const utils = api.useContext();
     const showDialog = useAlertDialog();
     const { sm } = useBreakpoints();
-    const emailInput = useRef<HTMLInputElement>(null);
     const addClinicForm = useRef<HTMLFormElement>(null);
     const { data: clinicDetails } =
         api.clinic.getClinicDetailsById.useQuery(id);
@@ -232,16 +231,6 @@ const ClinicSlugPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
                                 <EmptyContent
                                     title='No clinic users!'
                                     description="Add users to access the clinic's records"
-                                    actionText={
-                                        <>
-                                            <Plus
-                                                weight='bold'
-                                                className='mr-1 h-4 w-4 text-inherit'
-                                            />
-                                            <span>Add User</span>
-                                        </>
-                                    }
-                                    onClick={() => emailInput.current?.focus()}
                                 />
                             </div>
                         )}
@@ -251,7 +240,6 @@ const ClinicSlugPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
                             onSubmit={handleAddUser}
                         >
                             <Input
-                                ref={emailInput}
                                 required
                                 name='email'
                                 type='email'
