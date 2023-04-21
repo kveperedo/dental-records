@@ -41,7 +41,7 @@ const Overlay = forwardRef<
 >(({ className, ...props }, ref) => (
     <AlertDialogPrimitive.Overlay
         className={twMerge(
-            'fixed inset-0 z-50 bg-black/50 backdrop-blur-sm transition-opacity animate-in fade-in',
+            'fixed inset-0 z-50 bg-zinc-900/50 backdrop-blur-sm transition-opacity animate-in fade-in',
             className
         )}
         {...props}
