@@ -102,7 +102,7 @@ const ClinicSlugPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
     const { toast } = useToast();
     const hasUsers = users && users.length > 0;
 
-    const handleRemoveUser = async (userId: string) => {
+    const handleRemoveUser = async (email: string) => {
         const confirmed = await showDialog({
             title: 'Remove User?',
             description:
@@ -111,7 +111,7 @@ const ClinicSlugPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
         });
 
         if (confirmed) {
-            removeClinicUser(userId);
+            removeClinicUser(email);
         }
     };
 
@@ -199,11 +199,11 @@ const ClinicSlugPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
                                         {users.map((user) => (
                                             <div
                                                 className='group flex items-center justify-between'
-                                                key={user.id}
+                                                key={user.email}
                                             >
                                                 <div>
                                                     <p className='text-sm font-medium leading-none text-zinc-700'>
-                                                        {user.name}
+                                                        {user.name ?? 'Pending User'}
                                                     </p>
                                                     <p className='text-sm text-zinc-400'>
                                                         {user.email}
@@ -213,7 +213,7 @@ const ClinicSlugPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
                                                 <Button
                                                     onClick={() =>
                                                         void handleRemoveUser(
-                                                            user.id
+                                                            user.email
                                                         )
                                                     }
                                                     className='transition-all focus-within:opacity-100 group-hover:opacity-100 sm:opacity-0'

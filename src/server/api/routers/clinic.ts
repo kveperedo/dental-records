@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { adminProcedure, createTRPCRouter } from '~/server/api/trpc';
@@ -55,9 +56,11 @@ export const clinicRouter = createTRPCRouter({
                 data: { address, name },
             });
 
-            await ctx.prisma.user.updateMany({
-                where: { email: { in: emails } },
-                data: { clinicId: clinic.id },
+            await ctx.prisma.clinicUser.createMany({
+                data: emails.map((email) => ({
+                    clinicId: clinic.id,
+                    email,
+                })),
             });
 
             return clinic;
@@ -90,52 +93,71 @@ export const clinicRouter = createTRPCRouter({
     listClinicUsersById: adminProcedure
         .input(z.string())
         .query(async ({ ctx, input }) => {
-            return ctx.prisma.user.findMany({
+            const users = await ctx.prisma.clinicUser.findMany({
                 where: { clinicId: input },
                 select: {
-                    id: true,
                     email: true,
-                    name: true,
+                    User: {
+                        select: {
+                            name: true,
+                        },
+                    },
                 },
-                orderBy: { name: 'asc' },
+                orderBy: {
+                    User: {
+                        name: 'asc',
+                    },
+                },
             });
+
+            return users
+                .map(({ email, User }) => {
+                    return { email, name: User?.name ?? null };
+                })
+                .sort((a, b) => {
+                    if (a.name === null) {
+                        return 1;
+                    }
+
+                    if (b.name === null) {
+                        return -1;
+                    }
+
+                    return 0;
+                });
         }),
     removeClinicUser: adminProcedure
         .input(z.string())
-        .mutation(async ({ ctx, input: userId }) => {
-            const clinicUser = await ctx.prisma.user.update({
-                where: { id: userId },
-                data: { clinicId: null },
+        .mutation(async ({ ctx, input: email }) => {
+            return ctx.prisma.clinicUser.delete({
+                where: { email },
             });
-
-            return clinicUser;
         }),
     addClinicUser: adminProcedure
         .input(z.object({ clinicId: z.string(), email: z.string() }))
         .mutation(async ({ ctx, input: { clinicId, email } }) => {
-            const user = await ctx.prisma.user.findUnique({
-                where: { email },
-            });
-
-            if (!user) {
-                throw new TRPCError({
-                    code: 'NOT_FOUND',
-                    message: 'User not found. Please check the email address and try again.',
+            try {
+                const user = await ctx.prisma.clinicUser.create({
+                    data: {
+                        clinicId,
+                        email,
+                    },
                 });
+
+                return user;
+            } catch (error) {
+                if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                    // Unique constraint failed
+                    if (error.code === 'P2002') {
+                        throw new TRPCError({
+                            code: 'INTERNAL_SERVER_ERROR',
+                            message:
+                                'User already belongs to a clinic. Please remove them from their current clinic first.',
+                        });
+                    }
+                }
+
+                throw error;
             }
-
-            if (user.clinicId) {
-                throw new TRPCError({
-                    code: 'INTERNAL_SERVER_ERROR',
-                    message: 'User already belongs to a clinic. Please remove them from their current clinic first.',
-                });
-            }
-
-            const clinicUser = await ctx.prisma.user.update({
-                where: { email },
-                data: { clinicId },
-            });
-
-            return clinicUser;
         }),
 });
