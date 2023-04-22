@@ -18,6 +18,7 @@ import { Button } from '~/components/Button';
 import { useAlertDialog } from '~/context/AlertDialogContext';
 import EmptyContent from '~/components/EmptyContent';
 import ClinicDetailsDialog from '~/feature/clinic/ClinicDetailsDialog';
+import { isUserAdmin } from '~/server/utils/isUserAdmin';
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const session = await getServerAuthSession(ctx);
@@ -26,6 +27,15 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
         return {
             redirect: {
                 destination: '/login',
+                permanent: false,
+            },
+        };
+    }
+
+    if (!isUserAdmin(session.user.email ?? '')) {
+        return {
+            redirect: {
+                destination: '/',
                 permanent: false,
             },
         };

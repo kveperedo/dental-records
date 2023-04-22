@@ -22,6 +22,7 @@ import type { FormEvent } from 'react';
 import { useRef } from 'react';
 import Input from '~/components/Input';
 import ClinicDetailsDialog from '~/feature/clinic/ClinicDetailsDialog';
+import { isUserAdmin } from '~/server/utils/isUserAdmin';
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const session = await getServerAuthSession(ctx);
@@ -30,6 +31,15 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
         return {
             redirect: {
                 destination: '/login',
+                permanent: false,
+            },
+        };
+    }
+
+    if (!isUserAdmin(session.user.email ?? '')) {
+        return {
+            redirect: {
+                destination: '/',
                 permanent: false,
             },
         };
@@ -196,7 +206,10 @@ const ClinicSlugPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
                         variant='secondary'
                         onClick={() => setShowUpdateClinicDialog(true)}
                     >
-                        <PencilSimple weight='fill' className='h-4 w-4 sm:hidden' />
+                        <PencilSimple
+                            weight='fill'
+                            className='h-4 w-4 sm:hidden'
+                        />
                         <span className='hidden sm:block'>Edit</span>
                     </Button>
                     <Button
