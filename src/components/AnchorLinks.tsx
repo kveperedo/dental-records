@@ -4,22 +4,20 @@ import { useRouter } from 'next/router';
 import type { PropsWithChildren } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-const Link = ({
-    href,
-    Icon,
-    children,
-}: PropsWithChildren<{ href: string; Icon: Icon }>) => {
-    const router = useRouter();
+type LinkProps = PropsWithChildren<{
+    href: string;
+    Icon: Icon;
+    active: boolean;
+}>;
 
-    const routes = router.route.split('/').filter(Boolean);
-    const hrefRoute = href.split('/').filter(Boolean)[0];
-    const isActive = routes.includes(hrefRoute ?? '');
+const Link = ({ href, Icon, active, children }: LinkProps) => {
+    const router = useRouter();
 
     return (
         <a
             className={twMerge(
                 'relative flex w-full cursor-pointer items-center gap-3 whitespace-nowrap px-4 text-zinc-500 transition-colors hover:bg-zinc-100',
-                isActive
+                active
                     ? 'font-semibold text-zinc-700 before:absolute before:bottom-[-1px] before:left-0 before:block before:h-[1px] before:w-full before:bg-zinc-700'
                     : ' hover:text-zinc-800'
             )}
@@ -31,14 +29,30 @@ const Link = ({
     );
 };
 
+const recordsRoute = '/';
+const clinicRoute = '/clinic';
+const clinicSlugRoute = '/clinic/[id]';
+
 const AnchorLinks = ({ isAdmin }: { isAdmin: boolean }) => {
+    const router = useRouter();
+
     return (
         <ul className='mr-auto flex'>
-            <Link href='/' Icon={AddressBook}>
+            <Link
+                active={router.route === recordsRoute}
+                href={recordsRoute}
+                Icon={AddressBook}
+            >
                 Records
             </Link>
             {isAdmin && (
-                <Link href='/clinic' Icon={FolderSimpleLock}>
+                <Link
+                    active={[clinicRoute, clinicSlugRoute].includes(
+                        router.route
+                    )}
+                    href='/clinic'
+                    Icon={FolderSimpleLock}
+                >
                     Clinic Panel
                 </Link>
             )}
