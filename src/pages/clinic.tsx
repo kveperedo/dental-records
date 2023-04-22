@@ -126,7 +126,7 @@ const ClinicPage: NextPageWithLayout = () => {
                                         <MagnifyingGlass className='h-6 w-6 text-inherit' />
                                     </button>
                                 }
-                                endIconClassName='pointer-events-auto cursor-pointer hover:text-zinc-700 transition-colors'
+                                endIconClassName='pointer-events-auto cursor-pointer hover:text-zinc-500 transition-colors'
                             />
                         </form>
                     </header>

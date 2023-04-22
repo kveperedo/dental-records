@@ -27,7 +27,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                 {startIcon && (
                     <div
                         className={twMerge(
-                            'pointer-events-none absolute flex h-10 w-10 items-center justify-center text-zinc-400',
+                            'pointer-events-none absolute flex h-10 w-10 items-center justify-center text-zinc-300',
                             startIconClassName
                         )}
                     >
@@ -37,7 +37,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                 <input
                     ref={ref}
                     className={twMerge(
-                        'default-focus h-10 w-full rounded border border-zinc-300 bg-transparent px-4 py-2 transition-colors placeholder:text-zinc-400 text-sm hover:border-zinc-400',
+                        'default-focus h-10 w-full rounded border border-zinc-200 bg-transparent px-4 py-2 text-sm transition-colors placeholder:text-zinc-400 hover:border-zinc-300 hover:bg-zinc-100',
                         startIcon && 'pl-12',
                         endIcon && 'pr-12',
                         className
@@ -47,7 +47,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                 {endIcon && (
                     <div
                         className={twMerge(
-                            'pointer-events-none absolute right-0 top-0 flex h-10 w-10 items-center justify-center text-zinc-400',
+                            'pointer-events-none absolute right-0 top-0 flex h-10 w-10 items-center justify-center text-zinc-300',
                             endIconClassName
                         )}
                     >
