@@ -81,7 +81,7 @@ model Clinic {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
     name      String
-    address   String
+    address   String?
 
     users ClinicUser[]
 }

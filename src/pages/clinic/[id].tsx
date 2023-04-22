@@ -170,9 +170,11 @@ const ClinicSlugPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
                         <h1 className='text-2xl font-semibold'>
                             {clinicDetails.name}
                         </h1>
-                        <p className='hidden text-sm text-zinc-500 sm:block'>
-                            {clinicDetails.address}
-                        </p>
+                        {clinicDetails.address && (
+                            <p className='hidden text-sm text-zinc-500 sm:block'>
+                                {clinicDetails.address}
+                            </p>
+                        )}
                     </div>
                     <Button
                         size={sm ? 'default' : 'icon'}
@@ -203,7 +205,8 @@ const ClinicSlugPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
                                             >
                                                 <div>
                                                     <p className='text-sm font-medium leading-none text-zinc-700'>
-                                                        {user.name ?? 'Pending User'}
+                                                        {user.name ??
+                                                            'Pending User'}
                                                     </p>
                                                     <p className='text-sm text-zinc-400'>
                                                         {user.email}
