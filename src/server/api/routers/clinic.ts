@@ -47,23 +47,13 @@ export const clinicRouter = createTRPCRouter({
         .input(
             z.object({
                 name: z.string(),
-                address: z.string(),
-                emails: z.array(z.string().email()),
+                address: z.string().optional(),
             })
         )
-        .mutation(async ({ ctx, input: { address, name, emails } }) => {
-            const clinic = await ctx.prisma.clinic.create({
+        .mutation(async ({ ctx, input: { address, name } }) => {
+            return await ctx.prisma.clinic.create({
                 data: { address, name },
             });
-
-            await ctx.prisma.clinicUser.createMany({
-                data: emails.map((email) => ({
-                    clinicId: clinic.id,
-                    email,
-                })),
-            });
-
-            return clinic;
         }),
     updateClinic: adminProcedure
         .input(

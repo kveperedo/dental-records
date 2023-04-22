@@ -8,7 +8,7 @@ import { appRouter } from '~/server/api/root';
 import { createInnerTRPCContext } from '~/server/api/trpc';
 import superjson from 'superjson';
 import { api } from '~/utils/api';
-import { ArrowLeft, Plus, Trash } from '@phosphor-icons/react';
+import { ArrowLeft, PencilSimple, Trash } from '@phosphor-icons/react';
 import { useRouter } from 'next/router';
 import { Button } from '~/components/Button';
 import { useToast } from '~/hooks/useToast';
@@ -17,9 +17,11 @@ import ScrollArea from '~/components/ScrollArea';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import EmptyContent from '~/components/EmptyContent';
 import { useAlertDialog } from '~/context/AlertDialogContext';
+import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useRef } from 'react';
 import Input from '~/components/Input';
+import ClinicDetailsDialog from '~/feature/clinic/ClinicDetailsDialog';
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const session = await getServerAuthSession(ctx);
@@ -57,6 +59,7 @@ const ClinicSlugPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
     const showDialog = useAlertDialog();
     const { sm } = useBreakpoints();
     const addClinicForm = useRef<HTMLFormElement>(null);
+    const [showUpdateClinicDialog, setShowUpdateClinicDialog] = useState(false);
     const { data: clinicDetails } =
         api.clinic.getClinicDetailsById.useQuery(id);
     const { data: users, isLoading: isUsersLoading } =
@@ -68,6 +71,17 @@ const ClinicSlugPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
                     title: 'Delete Clinic',
                     description: `Successfully deleted clinic.`,
                 });
+                void utils.clinic.invalidate();
+            },
+        });
+    const { mutate: updateClinic, isLoading: isUpdatingClinic } =
+        api.clinic.updateClinic.useMutation({
+            onSuccess: () => {
+                toast({
+                    title: 'Update Clinic',
+                    description: `Successfully updated clinic.`,
+                });
+                setShowUpdateClinicDialog(false);
                 void utils.clinic.invalidate();
             },
         });
@@ -158,7 +172,7 @@ const ClinicSlugPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
                 <title>Clinic | {clinicDetails?.name}</title>
             </Head>
             <div className='container mx-auto flex h-full flex-1 flex-col p-2 md:px-0 md:py-6'>
-                <header className='flex items-center justify-between pb-2 md:pb-4'>
+                <header className='flex items-center justify-between gap-2 pb-2 md:pb-4'>
                     <Button
                         className='w-10 p-0'
                         variant='ghost'
@@ -166,8 +180,8 @@ const ClinicSlugPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
                     >
                         <ArrowLeft className='h-5 w-5' />
                     </Button>
-                    <div className='ml-4 mr-auto'>
-                        <h1 className='text-2xl font-semibold'>
+                    <div className='mr-auto truncate'>
+                        <h1 className='truncate text-2xl font-semibold'>
                             {clinicDetails.name}
                         </h1>
                         {clinicDetails.address && (
@@ -177,12 +191,22 @@ const ClinicSlugPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
                         )}
                     </div>
                     <Button
+                        className='shrink-0'
+                        size={sm ? 'default' : 'icon'}
+                        variant='secondary'
+                        onClick={() => setShowUpdateClinicDialog(true)}
+                    >
+                        <PencilSimple weight='fill' className='h-4 w-4 sm:hidden' />
+                        <span className='hidden sm:block'>Edit</span>
+                    </Button>
+                    <Button
+                        className='shrink-0'
                         size={sm ? 'default' : 'icon'}
                         onClick={() => void handleDeleteClinic()}
-                        variant='secondary'
+                        variant='destructive'
                     >
                         <Trash weight='fill' className='h-4 w-4 sm:hidden' />
-                        <span className='hidden sm:block'>Delete Clinic</span>
+                        <span className='hidden sm:block'>Delete</span>
                     </Button>
                 </header>
                 <div className='flex h-full w-full flex-1 flex-col overflow-hidden rounded border border-zinc-200 bg-zinc-50 md:w-96'>
@@ -249,17 +273,23 @@ const ClinicSlugPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
                                 containerClassName='flex-1'
                                 placeholder='Enter email here...'
                             />
-                            <Button
-                                loading={isAddingUser}
-                                type='submit'
-                                variant='outline'
-                            >
+                            <Button loading={isAddingUser} type='submit'>
                                 Add User
                             </Button>
                         </form>
                     </>
                 </div>
             </div>
+            <ClinicDetailsDialog
+                open={showUpdateClinicDialog}
+                defaultValues={{
+                    name: clinicDetails.name,
+                    address: clinicDetails.address ?? '',
+                }}
+                loading={isUpdatingClinic}
+                onOpenChange={setShowUpdateClinicDialog}
+                onSubmit={(data) => updateClinic({ clinicId: id, ...data })}
+            />
         </>
     );
 };

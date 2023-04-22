@@ -30,26 +30,28 @@ const MainLayout = ({ children, className }: MainLayoutProps) => {
     return (
         <div className='flex h-screen flex-col'>
             {sessionData && (
-                <header className='flex items-stretch justify-between border-b border-zinc-200 bg-zinc-50 px-8'>
-                    <AnchorLinks isAdmin={isAdmin} />
-                    {sessionData && (
-                        <Button
-                            className='my-2'
-                            variant='outline'
-                            onClick={() => void signOut()}
-                        >
-                            {sessionData.user.image && (
-                                <Image
-                                    className='rounded-full mr-2'
-                                    src={sessionData.user.image}
-                                    alt='user image'
-                                    width={24}
-                                    height={24}
-                                />
-                            )}
-                            <span>Sign out</span>
-                        </Button>
-                    )}
+                <header className='border-b border-zinc-200 bg-zinc-50'>
+                    <div className='container mx-auto flex items-stretch justify-between px-2 sm:px-0'>
+                        <AnchorLinks isAdmin={isAdmin} />
+                        {sessionData && (
+                            <Button
+                                className='my-2'
+                                variant='outline'
+                                onClick={() => void signOut()}
+                            >
+                                {sessionData.user.image && (
+                                    <Image
+                                        className='mr-2 rounded-full'
+                                        src={sessionData.user.image}
+                                        alt='user image'
+                                        width={24}
+                                        height={24}
+                                    />
+                                )}
+                                <span>Sign out</span>
+                            </Button>
+                        )}
+                    </div>
                 </header>
             )}
             <main

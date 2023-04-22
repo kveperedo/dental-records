@@ -17,6 +17,7 @@ import { useRouter } from 'next/router';
 import { Button } from '~/components/Button';
 import { useAlertDialog } from '~/context/AlertDialogContext';
 import EmptyContent from '~/components/EmptyContent';
+import ClinicDetailsDialog from '~/feature/clinic/ClinicDetailsDialog';
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const session = await getServerAuthSession(ctx);
@@ -35,9 +36,11 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
 const ClinicPage: NextPageWithLayout = () => {
     const router = useRouter();
+    const { toast } = useToast();
     const showDialog = useAlertDialog();
     const form = useRef<HTMLFormElement>(null);
     const searchInput = useRef<HTMLInputElement>(null);
+    const [showAddClinicDialog, setShowAddClinicDialog] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [pageNumber, setPageNumber] = useState(1);
     const utils = api.useContext();
@@ -47,6 +50,17 @@ const ClinicPage: NextPageWithLayout = () => {
         pageNumber,
         searchTerm,
     });
+    const { mutate: addClinic, isLoading: isAddingClinic } =
+        api.clinic.addClinic.useMutation({
+            onSuccess: async ({ id }, { name }) => {
+                setShowAddClinicDialog(false);
+                await router.push(`/clinic/${id}`);
+                toast({
+                    title: 'Add Clinic',
+                    description: `Successfully added ${name} clinic.`,
+                });
+            },
+        });
     const { mutate: deleteClinic, isLoading: isDeletingClinic } =
         api.clinic.deleteClinic.useMutation({
             onSuccess: () => {
@@ -57,7 +71,6 @@ const ClinicPage: NextPageWithLayout = () => {
                 void utils.clinic.invalidate();
             },
         });
-    const { toast } = useToast();
     const areRecordsLoading = isLoading || !data || isDeletingClinic;
     const isEmptySearchQuery = searchTerm && !data?.length;
 
@@ -104,9 +117,9 @@ const ClinicPage: NextPageWithLayout = () => {
                 <title>Clinic Panel</title>
             </Head>
             <div className='flex h-full flex-1'>
-                <div className='m-2 flex w-full flex-col rounded border border-zinc-200 bg-zinc-50 sm:mx-auto sm:my-8 sm:w-[768px]'>
+                <div className='container m-2 flex w-full flex-col rounded border border-zinc-200 bg-zinc-50 sm:mx-auto sm:my-8'>
                     <header className='mb-6 flex items-center justify-between gap-4 p-4'>
-                        <Button>
+                        <Button onClick={() => setShowAddClinicDialog(true)}>
                             <Plus className='h-4 w-4 text-inherit' />
                             <span className='ml-1 hidden sm:block'>
                                 Add Clinic
@@ -185,13 +198,13 @@ const ClinicPage: NextPageWithLayout = () => {
                                                 </div>
                                                 <div
                                                     className={twMerge(
-                                                        'flex basis-1/6 border-b border-zinc-200 px-4 py-2',
+                                                        'flex basis-1/6 justify-end border-b border-zinc-200 px-4 py-2',
                                                         isLast &&
                                                             'border-transparent'
                                                     )}
                                                 >
                                                     <Button
-                                                        className='sm:opacity-0 transition-all focus-within:opacity-100 group-hover:opacity-100'
+                                                        className='transition-all focus-within:opacity-100 group-hover:opacity-100 sm:opacity-0'
                                                         variant='link'
                                                         onClick={(event) => {
                                                             event.stopPropagation();
@@ -221,6 +234,12 @@ const ClinicPage: NextPageWithLayout = () => {
                     </footer>
                 </div>
             </div>
+            <ClinicDetailsDialog
+                open={showAddClinicDialog}
+                onOpenChange={setShowAddClinicDialog}
+                loading={isAddingClinic}
+                onSubmit={addClinic}
+            />
         </>
     );
 };
