@@ -137,6 +137,17 @@ export const clinicRouter = createTRPCRouter({
         .input(z.object({ clinicId: z.string(), email: z.string() }))
         .mutation(async ({ ctx, input: { clinicId, email } }) => {
             try {
+                const existingUser = await ctx.prisma.clinicUser.findUnique({
+                    where: { email },
+                });
+
+                if (existingUser) {
+                    throw new TRPCError({
+                        code: 'INTERNAL_SERVER_ERROR',
+                        message: 'User already exists in this clinic.',
+                    });
+                }
+
                 const user = await ctx.prisma.clinicUser.create({
                     data: {
                         clinicId,
