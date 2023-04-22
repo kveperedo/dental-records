@@ -50,7 +50,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
                 {...props}
             >
                 {loading && (
-                    <div className='absolute flex h-full w-full items-center justify-center rounded bg-zinc-200 outline outline-zinc-200'>
+                    <div className='absolute inset-0 flex items-center justify-center rounded bg-zinc-200'>
                         <svg
                             aria-hidden='true'
                             className='h-6 w-6 animate-spin fill-zinc-500 text-zinc-300'
