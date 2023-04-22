@@ -16,7 +16,7 @@ const Root = DialogPrimitive.Root;
 const Trigger = DialogPrimitive.Trigger;
 
 //  ---------------------------------------
-//  Trigger
+//  Portal
 //  ---------------------------------------
 
 const Portal = ({
@@ -50,6 +50,12 @@ const Overlay = forwardRef<
     />
 ));
 Overlay.displayName = DialogPrimitive.Overlay.displayName;
+
+//  ---------------------------------------
+//  Close
+//  ---------------------------------------
+
+const Close = DialogPrimitive.Close;
 
 //  ---------------------------------------
 //  Content
@@ -89,7 +95,7 @@ const Header = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
     <div
         className={twMerge(
-            'flex flex-col space-y-2 text-center sm:text-left',
+            'flex flex-col space-y-1.5 text-center sm:text-left',
             className
         )}
         {...props}
@@ -155,6 +161,7 @@ const Dialog = {
     Footer,
     Title,
     Description,
+    Close,
 };
 
 export default Dialog;
