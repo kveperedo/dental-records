@@ -191,7 +191,7 @@ const ClinicPage: NextPageWithLayout = () => {
                                                     )}
                                                 >
                                                     <Button
-                                                        className='opacity-0 transition-all group-hover:opacity-100'
+                                                        className='sm:opacity-0 transition-all focus-within:opacity-100 group-hover:opacity-100'
                                                         variant='link'
                                                         onClick={(event) => {
                                                             event.stopPropagation();
