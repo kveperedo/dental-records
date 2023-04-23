@@ -111,13 +111,16 @@ export const publicProcedure = t.procedure;
 
 /** Reusable middleware that enforces users are logged in before running the procedure. */
 const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
-    if (!ctx.session || !ctx.session.user) {
+    if (!ctx.session || !ctx.session.user || !ctx.session.user.email) {
         throw new TRPCError({ code: 'UNAUTHORIZED' });
     }
+
+    const email = ctx.session.user.email;
+
     return next({
         ctx: {
             // infers the `session` as non-nullable
-            session: { ...ctx.session, user: ctx.session.user },
+            session: { ...ctx.session, user: { ...ctx.session.user, email } },
         },
     });
 });
@@ -131,6 +134,32 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
  * @see https://trpc.io/docs/procedures
  */
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
+
+const enforceUserIsClinicUser = t.middleware(async ({ ctx, next }) => {
+    // Email and session is guaranteed to be non-null because of the `protectedProcedure` middleware
+    const session = ctx.session as Session;
+    const email = session.user.email as string;
+
+    const clinicUser = await prisma.clinicUser.findUnique({
+        where: { email },
+    });
+
+    if (!clinicUser) {
+        throw new TRPCError({ code: 'UNAUTHORIZED' });
+    }
+
+    return next({
+        ctx: {
+            // infers the `session` as non-nullable
+            session: {
+                ...session,
+                user: { ...session.user, clinicId: clinicUser.clinicId },
+            },
+        },
+    });
+});
+
+export const clinicProcedure = protectedProcedure.use(enforceUserIsClinicUser);
 
 const enforceUserIsAdmin = t.middleware(({ ctx, next }) => {
     if (!ctx.session?.user?.email) {

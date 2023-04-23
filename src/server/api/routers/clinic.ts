@@ -1,11 +1,28 @@
 import { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-import { adminProcedure, createTRPCRouter } from '~/server/api/trpc';
+import {
+    adminProcedure,
+    createTRPCRouter,
+    protectedProcedure,
+} from '~/server/api/trpc';
 
 const MAX_NUMBER_OF_CLINICS_PER_QUERY = 20;
 
 export const clinicRouter = createTRPCRouter({
+    hasClinicAccess: protectedProcedure.query(async ({ ctx }) => {
+        const email = ctx.session.user.email;
+
+        try {
+            const user = await ctx.prisma.clinicUser.findUnique({
+                where: { email },
+            });
+
+            return Boolean(user);
+        } catch (e) {
+            return false;
+        }
+    }),
     getClinicPageCount: adminProcedure
         .input(z.string().optional())
         .query(async ({ ctx, input: searchTerm }) => {

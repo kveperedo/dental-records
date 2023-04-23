@@ -85,5 +85,34 @@ model Clinic {
     name      String
     address   String?
 
-    users ClinicUser[]
+    users   ClinicUser[]
+    records Record[]
+}
+
+enum Gender {
+    male
+    female
+}
+
+enum MaritalStatus {
+    single
+    married
+    divorced
+    separated
+    widowed
+}
+
+model Record {
+    id         String        @id @default(cuid())
+    name       String
+    address    String?
+    telephone  String?
+    occupation String?
+    gender     Gender
+    status     MaritalStatus
+    birthDate  DateTime
+    Clinic     Clinic        @relation(fields: [clinicId], references: [id])
+    clinicId   String
+
+    @@index([clinicId])
 }
