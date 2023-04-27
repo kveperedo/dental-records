@@ -10,18 +10,20 @@ import {
 const MAX_NUMBER_OF_CLINICS_PER_QUERY = 20;
 
 export const clinicRouter = createTRPCRouter({
-    hasClinicAccess: protectedProcedure.query(async ({ ctx }) => {
+    getUserClinicDetails: protectedProcedure.query(async ({ ctx }) => {
         const email = ctx.session.user.email;
 
-        try {
-            const user = await ctx.prisma.clinicUser.findUnique({
-                where: { email },
-            });
+        const clinicUser = await ctx.prisma.clinicUser.findUnique({
+            where: { email },
+        });
 
-            return Boolean(user);
-        } catch (e) {
-            return false;
+        if (!clinicUser) {
+            return null;
         }
+
+        return ctx.prisma.clinic.findUnique({
+            where: { id: clinicUser.clinicId },
+        });
     }),
     getClinicPageCount: adminProcedure
         .input(z.string().optional())

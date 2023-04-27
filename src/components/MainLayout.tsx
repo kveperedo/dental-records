@@ -5,7 +5,6 @@ import { signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import AnchorLinks from './AnchorLinks';
 import { api } from '~/utils/api';
-import Loading from './Loading';
 import { Button } from './Button';
 
 type MainLayoutProps = PropsWithChildren<{
@@ -20,11 +19,7 @@ const MainLayout = ({ children, className }: MainLayoutProps) => {
     });
 
     if (isLoading || isAdmin === undefined) {
-        return (
-            <div className='h-screen w-screen'>
-                <Loading />
-            </div>
-        );
+        return null;
     }
 
     return (
@@ -55,10 +50,7 @@ const MainLayout = ({ children, className }: MainLayoutProps) => {
                 </header>
             )}
             <main
-                className={twMerge(
-                    'flex flex-1 flex-col overflow-hidden bg-zinc-100',
-                    className
-                )}
+                className={twMerge('flex flex-1 flex-col overflow-hidden bg-zinc-100', className)}
             >
                 {children}
             </main>

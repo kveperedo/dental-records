@@ -26,7 +26,7 @@ export interface PaginationParams {
     onChange?: (page: number) => void;
 }
 
-export const usePagination = ({
+export const usePaginationState = ({
     total,
     siblings = 1,
     boundaries = 1,

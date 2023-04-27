@@ -1,7 +1,7 @@
 import { CaretLeft, CaretRight } from '@phosphor-icons/react';
 import type { ButtonHTMLAttributes } from 'react';
 import { twMerge } from 'tailwind-merge';
-import { DOTS, usePagination } from '~/hooks/usePagination';
+import { DOTS, usePaginationState } from './usePaginationState';
 
 interface PaginationButtonProps
     extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -38,7 +38,7 @@ interface PaginationProps {
 }
 
 const Pagination = ({ total, initialPage, onChange }: PaginationProps) => {
-    const { range, active, next, previous, setPage } = usePagination({
+    const { range, active, next, previous, setPage } = usePaginationState({
         total,
         initialPage,
         onChange,
