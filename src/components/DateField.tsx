@@ -8,13 +8,14 @@ import type { CalendarDate } from '@internationalized/date';
 import Popover from './Popover';
 import { Calendar } from './Calendar';
 import dayjs from 'dayjs';
-import { useState } from 'react';
+import { forwardRef, useState } from 'react';
 
 type DateFieldProps<T extends DateValue> = Omit<DateFieldPrimitiveProps<T>, 'className'> & {
     className?: string;
 };
 
-const DateField = <T extends CalendarDate>({ className, ...props }: DateFieldProps<T>) => {
+
+const DateField = forwardRef<HTMLDivElement, DateFieldProps<CalendarDate>>(({ className, ...props }, ref) => {
     const [calendarOpen, setCalendarOpen] = useState(false);
     const handleCalendarSelect = (date?: Date) => {
         if (!date) {
@@ -37,6 +38,7 @@ const DateField = <T extends CalendarDate>({ className, ...props }: DateFieldPro
         <Popover.Root open={calendarOpen} onOpenChange={setCalendarOpen} modal>
             <Popover.Anchor>
                 <DateFieldPrimitive
+                    ref={ref}
                     className={twMerge(
                         'flex h-10 items-center rounded border border-zinc-200 bg-transparent pl-4 pr-0 transition-colors hover:border-zinc-300',
                         className
@@ -75,6 +77,8 @@ const DateField = <T extends CalendarDate>({ className, ...props }: DateFieldPro
             </Popover.Anchor>
         </Popover.Root>
     );
-};
+});
+
+DateField.displayName = 'DateField';
 
 export default DateField;
