@@ -78,8 +78,10 @@ const ClinicPage: NextPageWithLayout = () => {
                 void utils.clinic.invalidate();
             },
         });
+
     const areRecordsLoading = isLoading || !data || isDeletingClinic;
-    const isEmptySearchQuery = searchTerm && !data?.length;
+    const hasRecords = data && data.length > 0;
+    const hasEmptySearchResults = searchTerm.length > 0 && !hasRecords;
 
     const handleInputReset = () => {
         setSearchTerm('');
@@ -119,17 +121,28 @@ const ClinicPage: NextPageWithLayout = () => {
             );
         }
 
-        if (isEmptySearchQuery) {
+        if (hasEmptySearchResults) {
             return (
                 <div className='flex h-full items-center justify-center'>
                     <EmptyContent
-                        title='No clinic found'
+                        title='No clinic found!'
                         description='Please try again with a different search term'
                     >
                         <Button variant='outline' onClick={handleResetSearch}>
                             Clear Search
                         </Button>
                     </EmptyContent>
+                </div>
+            );
+        }
+
+        if (!hasRecords) {
+            return (
+                <div className='flex flex-1 items-center justify-center'>
+                    <EmptyContent
+                        title='No clinics!'
+                        description="Add a clinic by clicking the 'Add Clinic' button."
+                    ></EmptyContent>
                 </div>
             );
         }
@@ -203,7 +216,7 @@ const ClinicPage: NextPageWithLayout = () => {
 
                     {renderContent()}
 
-                    {!isEmptySearchQuery && (
+                    {(!hasEmptySearchResults || hasRecords) && (
                         <Table.Footer>
                             <Pagination
                                 key={searchTerm}

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { addRecordSchema } from '~/feature/record/constants';
 import { clinicProcedure, createTRPCRouter } from '~/server/api/trpc';
 
 const MAX_NUMBER_OF_RECORD_PER_QUERY = 20;
@@ -35,5 +36,19 @@ export const recordRouter = createTRPCRouter({
             });
 
             return records;
+        }),
+    addRecord: clinicProcedure
+        .input(
+            addRecordSchema.omit({ birthDate: true }).extend({
+                clinicId: z.string(),
+                birthDate: z.date(),
+            })
+        )
+        .mutation(async ({ ctx, input }) => {
+            const record = await ctx.prisma.record.create({
+                data: input,
+            });
+
+            return record;
         }),
 });

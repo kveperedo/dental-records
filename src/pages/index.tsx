@@ -18,6 +18,9 @@ import EmptyContent from '~/components/EmptyContent';
 import Pagination from '~/components/Pagination';
 import SearchInput from '~/components/SearchInput';
 import Table from '~/components/Table';
+import RecordDetailsDialog from '~/feature/record/RecordDetailsDialog';
+import { useToast } from '~/hooks/useToast';
+import { getLocalTimeZone } from '@internationalized/date';
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     const session = await getServerAuthSession(ctx);
@@ -63,10 +66,12 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 const HomePage: NextPageWithLayout<InferGetServerSidePropsType<typeof getServerSideProps>> = ({
     clinicDetails,
 }) => {
+    const { toast } = useToast();
     const searchInput = useRef<HTMLInputElement>(null);
     const form = useRef<HTMLFormElement>(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [pageNumber, setPageNumber] = useState(1);
+    const [showAddRecordDialog, setShowAddRecordDialog] = useState(false);
     const { data: pageCount } = api.record.getRecordPageCount.useQuery({
         clinicId: clinicDetails.id,
         searchTerm,
@@ -76,9 +81,21 @@ const HomePage: NextPageWithLayout<InferGetServerSidePropsType<typeof getServerS
         pageNumber,
         searchTerm,
     });
+    const { mutate: addRecord, isLoading: isAddingRecord } = api.record.addRecord.useMutation({
+        onSuccess: ({ name }) => {
+            setShowAddRecordDialog(false);
+            // TODO: redirect to record id page
+            // await router.push(`/clinic/${id}`);
+            toast({
+                title: 'Add Record',
+                description: `Successfully added ${name} to records.`,
+            });
+        },
+    });
 
     const areRecordsLoading = isLoading || !data;
-    const isEmptySearchQuery = searchTerm && !data?.length;
+    const hasRecords = data && data.length > 0;
+    const hasEmptySearchResults = searchTerm.length > 0 && !hasRecords;
 
     const handleInputReset = () => {
         setSearchTerm('');
@@ -105,17 +122,28 @@ const HomePage: NextPageWithLayout<InferGetServerSidePropsType<typeof getServerS
             );
         }
 
-        if (isEmptySearchQuery) {
+        if (hasEmptySearchResults) {
             return (
                 <div className='flex h-full flex-1 items-center justify-center'>
                     <EmptyContent
-                        title='No clinic users!'
-                        description="Add users to access the clinic's records"
+                        title='No record found!'
+                        description='Please try again with a different search term'
                     >
                         <Button variant='outline' onClick={handleResetSearch}>
                             Clear Search
                         </Button>
                     </EmptyContent>
+                </div>
+            );
+        }
+
+        if (!hasRecords) {
+            return (
+                <div className='flex flex-1 items-center justify-center'>
+                    <EmptyContent
+                        title='No records!'
+                        description="Add a record by clicking the 'Add Record' button."
+                    ></EmptyContent>
                 </div>
             );
         }
@@ -167,7 +195,7 @@ const HomePage: NextPageWithLayout<InferGetServerSidePropsType<typeof getServerS
                     <div className='mr-auto truncate'>
                         <h1 className='truncate text-2xl font-semibold'>{clinicDetails.name}</h1>
                     </div>
-                    <Button>
+                    <Button onClick={() => setShowAddRecordDialog(true)}>
                         <Plus className='h-4 w-4 text-inherit' />
                         <span className='ml-1 hidden sm:block'>Add Record</span>
                     </Button>
@@ -195,7 +223,7 @@ const HomePage: NextPageWithLayout<InferGetServerSidePropsType<typeof getServerS
 
                     {renderContent()}
 
-                    {!isEmptySearchQuery && (
+                    {(!hasEmptySearchResults && hasRecords) && (
                         <Table.Footer>
                             <Pagination
                                 key={searchTerm}
@@ -207,6 +235,18 @@ const HomePage: NextPageWithLayout<InferGetServerSidePropsType<typeof getServerS
                     )}
                 </Table.Root>
             </div>
+            <RecordDetailsDialog
+                open={showAddRecordDialog}
+                onOpenChange={setShowAddRecordDialog}
+                loading={isAddingRecord}
+                onSubmit={(data) => {
+                    addRecord({
+                        ...data,
+                        clinicId: clinicDetails.id,
+                        birthDate: data.birthDate.toDate(getLocalTimeZone()),
+                    });
+                }}
+            />
         </>
     );
 };

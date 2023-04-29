@@ -19,11 +19,7 @@ const Trigger = DialogPrimitive.Trigger;
 //  Portal
 //  ---------------------------------------
 
-const Portal = ({
-    className,
-    children,
-    ...props
-}: DialogPrimitive.DialogPortalProps) => (
+const Portal = ({ className, children, ...props }: DialogPrimitive.DialogPortalProps) => (
     <DialogPrimitive.Portal className={twMerge(className)} {...props}>
         <div className='fixed inset-0 z-50 flex items-start justify-center sm:items-center'>
             {children}
@@ -70,7 +66,7 @@ const Content = forwardRef<
         <DialogPrimitive.Content
             ref={ref}
             className={twMerge(
-                'fixed bottom-0 z-50 grid w-full gap-4 rounded-b-lg border bg-zinc-50 p-6 shadow-lg animate-in data-[state=open]:fade-in-90 data-[state=open]:slide-in-from-bottom-10 sm:bottom-auto sm:max-w-lg sm:rounded-lg sm:zoom-in-90 data-[state=open]:sm:slide-in-from-bottom-0',
+                'fixed bottom-0 z-50 grid w-full gap-4 border bg-zinc-50 p-6 shadow-lg animate-in data-[state=open]:fade-in-90 data-[state=open]:slide-in-from-bottom-10 sm:bottom-auto sm:max-w-lg sm:rounded-lg sm:zoom-in-90 data-[state=open]:sm:slide-in-from-bottom-0',
                 className
             )}
             {...props}
@@ -89,15 +85,9 @@ Content.displayName = DialogPrimitive.Content.displayName;
 //  Header
 //  ---------------------------------------
 
-const Header = ({
-    className,
-    ...props
-}: React.HTMLAttributes<HTMLDivElement>) => (
+const Header = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
     <div
-        className={twMerge(
-            'flex flex-col space-y-1.5 text-center sm:text-left',
-            className
-        )}
+        className={twMerge('flex flex-col space-y-1.5 text-center sm:text-left', className)}
         {...props}
     />
 );
@@ -107,10 +97,7 @@ Header.displayName = 'DialogHeader';
 //  Footer
 //  ---------------------------------------
 
-const Footer = ({
-    className,
-    ...props
-}: React.HTMLAttributes<HTMLDivElement>) => (
+const Footer = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
     <div
         className={twMerge(
             'flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2',
