@@ -72,12 +72,8 @@ const HomePage: NextPageWithLayout<InferGetServerSidePropsType<typeof getServerS
     const [searchTerm, setSearchTerm] = useState('');
     const [pageNumber, setPageNumber] = useState(1);
     const [showAddRecordDialog, setShowAddRecordDialog] = useState(false);
-    const { data: pageCount } = api.record.getRecordPageCount.useQuery({
-        clinicId: clinicDetails.id,
-        searchTerm,
-    });
+    const { data: pageCount } = api.record.getRecordPageCount.useQuery(searchTerm);
     const { data, isLoading } = api.record.listRecords.useQuery({
-        clinicId: clinicDetails.id,
         pageNumber,
         searchTerm,
     });
@@ -223,7 +219,7 @@ const HomePage: NextPageWithLayout<InferGetServerSidePropsType<typeof getServerS
 
                     {renderContent()}
 
-                    {(!hasEmptySearchResults && hasRecords) && (
+                    {!hasEmptySearchResults && hasRecords && (
                         <Table.Footer>
                             <Pagination
                                 key={searchTerm}
@@ -242,7 +238,6 @@ const HomePage: NextPageWithLayout<InferGetServerSidePropsType<typeof getServerS
                 onSubmit={(data) => {
                     addRecord({
                         ...data,
-                        clinicId: clinicDetails.id,
                         birthDate: data.birthDate.toDate(getLocalTimeZone()),
                     });
                 }}
