@@ -28,7 +28,8 @@ const Link = ({ href, Icon, active, children }: LinkProps) => {
     );
 };
 
-const recordsRoute = '/';
+const recordRoute = '/';
+const recordSlugRoute = '/record/[id]';
 const clinicRoute = '/clinic';
 const clinicSlugRoute = '/clinic/[id]';
 
@@ -38,18 +39,16 @@ const AnchorLinks = ({ isAdmin }: { isAdmin: boolean }) => {
     return (
         <ul className='mr-auto flex'>
             <Link
-                active={router.route === recordsRoute}
-                href={recordsRoute}
+                active={[recordRoute, recordSlugRoute].includes(router.route)}
+                href={recordRoute}
                 Icon={AddressBook}
             >
                 Records
             </Link>
             {isAdmin && (
                 <Link
-                    active={[clinicRoute, clinicSlugRoute].includes(
-                        router.route
-                    )}
-                    href='/clinic'
+                    active={[clinicRoute, clinicSlugRoute].includes(router.route)}
+                    href={clinicRoute}
                     Icon={FolderSimpleLock}
                 >
                     Clinic Panel
