@@ -98,7 +98,7 @@ const RecordDetailsDialog = ({
                     onSubmit={(event) => void handleSubmit(handleFormSubmit)(event)}
                 >
                     <div className='flex flex-col gap-4 sm:flex-row'>
-                        <fieldset className='flex flex-1 flex-col gap-2'>
+                        <fieldset className='flex flex-[2] flex-col gap-2'>
                             <Label htmlFor='name'>Name</Label>
                             <Input id='name' placeholder='Name' {...register('name')} />
                             {errors.name?.message && (
