@@ -23,6 +23,7 @@ import { useRef } from 'react';
 import Input from '~/components/Input';
 import ClinicDetailsDialog from '~/feature/clinic/ClinicDetailsDialog';
 import { isUserAdmin } from '~/server/utils/isUserAdmin';
+import Tooltip from '~/components/Tooltip';
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const session = await getServerAuthSession(ctx);
@@ -70,10 +71,8 @@ const ClinicSlugPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
     const { sm } = useBreakpoints();
     const addClinicForm = useRef<HTMLFormElement>(null);
     const [showUpdateClinicDialog, setShowUpdateClinicDialog] = useState(false);
-    const { data: clinicDetails } =
-        api.clinic.getClinicDetailsById.useQuery(id);
-    const { data: users, isLoading: isUsersLoading } =
-        api.clinic.listClinicUsersById.useQuery(id);
+    const { data: clinicDetails } = api.clinic.getClinicDetailsById.useQuery(id);
+    const { data: users, isLoading: isUsersLoading } = api.clinic.listClinicUsersById.useQuery(id);
     const { mutate: deleteClinic, isLoading: isDeletingClinic } =
         api.clinic.deleteClinic.useMutation({
             onSuccess: () => {
@@ -95,18 +94,17 @@ const ClinicSlugPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
                 void utils.clinic.invalidate();
             },
         });
-    const { mutate: removeClinicUser } =
-        api.clinic.removeClinicUser.useMutation({
-            onSuccess: () => {
-                toast({
-                    title: 'Remove User',
-                    description: `Successfully removed user.`,
-                });
-                void utils.clinic.invalidate();
-            },
-        });
-    const { mutate: addClinicUser, isLoading: isAddingUser } =
-        api.clinic.addClinicUser.useMutation({
+    const { mutate: removeClinicUser } = api.clinic.removeClinicUser.useMutation({
+        onSuccess: () => {
+            toast({
+                title: 'Remove User',
+                description: `Successfully removed user.`,
+            });
+            void utils.clinic.invalidate();
+        },
+    });
+    const { mutate: addClinicUser, isLoading: isAddingUser } = api.clinic.addClinicUser.useMutation(
+        {
             onSuccess: (_, { email }) => {
                 toast({
                     title: 'Add User',
@@ -122,7 +120,8 @@ const ClinicSlugPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
                     variant: 'destructive',
                 });
             },
-        });
+        }
+    );
     const { toast } = useToast();
     const hasUsers = users && users.length > 0;
 
@@ -183,17 +182,21 @@ const ClinicSlugPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
             </Head>
             <div className='container mx-auto flex h-full flex-1 flex-col p-2 md:px-0 md:py-6'>
                 <header className='flex items-center justify-between gap-2 pb-2 md:pb-4'>
-                    <Button
-                        className='w-10 p-0'
-                        variant='ghost'
-                        onClick={() => router.back()}
-                    >
-                        <ArrowLeft className='h-5 w-5' />
-                    </Button>
+                    <Tooltip.Root>
+                        <Tooltip.Trigger>
+                            <Button
+                                className='w-10 p-0'
+                                variant='ghost'
+                                onClick={() => router.back()}
+                            >
+                                <ArrowLeft className='h-5 w-5' />
+                            </Button>
+                        </Tooltip.Trigger>
+                        <Tooltip.Content>Back</Tooltip.Content>
+                    </Tooltip.Root>
+
                     <div className='mr-auto truncate'>
-                        <h1 className='truncate text-2xl font-semibold'>
-                            {clinicDetails.name}
-                        </h1>
+                        <h1 className='truncate text-2xl font-semibold'>{clinicDetails.name}</h1>
                         {clinicDetails.address && (
                             <p className='hidden text-sm text-zinc-500 sm:block'>
                                 {clinicDetails.address}
@@ -206,10 +209,7 @@ const ClinicSlugPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
                         variant='secondary'
                         onClick={() => setShowUpdateClinicDialog(true)}
                     >
-                        <PencilSimple
-                            weight='fill'
-                            className='h-4 w-4 sm:hidden'
-                        />
+                        <PencilSimple weight='fill' className='h-4 w-4 sm:hidden' />
                         <span className='hidden sm:block'>Edit</span>
                     </Button>
                     <Button
@@ -227,8 +227,7 @@ const ClinicSlugPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
                         <div className='border-b border-zinc-200 p-4'>
                             <p className='text-lg font-semibold'>Users</p>
                             <p className='text-sm text-zinc-500'>
-                                List of users that have access to this
-                                clinic&apos;s records
+                                List of users that have access to this clinic&apos;s records
                             </p>
                         </div>
                         {hasUsers ? (
@@ -242,8 +241,7 @@ const ClinicSlugPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
                                             >
                                                 <div>
                                                     <p className='text-sm font-medium leading-none text-zinc-700'>
-                                                        {user.name ??
-                                                            'Pending User'}
+                                                        {user.name ?? 'Pending User'}
                                                     </p>
                                                     <p className='text-sm text-zinc-400'>
                                                         {user.email}
@@ -252,9 +250,7 @@ const ClinicSlugPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
 
                                                 <Button
                                                     onClick={() =>
-                                                        void handleRemoveUser(
-                                                            user.email
-                                                        )
+                                                        void handleRemoveUser(user.email)
                                                     }
                                                     className='transition-all focus-within:opacity-100 group-hover:opacity-100 sm:opacity-0'
                                                     variant='link'
