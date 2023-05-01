@@ -10,6 +10,7 @@ import { addRecordSchema } from './constants';
 import Select from '~/components/Select';
 import RadioGroup from '~/components/RadioGroup';
 import DateField from '~/components/DateField';
+import { useEffect } from 'react';
 
 type RecordDetailsFormData = z.infer<typeof addRecordSchema>;
 
@@ -63,11 +64,16 @@ const RecordDetailsDialog = ({
         resolver: zodResolver(addRecordSchema),
         shouldUnregister: true,
         shouldUseNativeValidation: false,
-        defaultValues: {
+        defaultValues: defaultValues ?? {
             gender: 'male',
         },
-        values: defaultValues,
     });
+
+    useEffect(() => {
+        reset({
+            ...defaultValues,
+        });
+    }, [defaultValues, reset]);
 
     const handleOpenChange = (open: boolean) => {
         if (!open) {
@@ -83,7 +89,10 @@ const RecordDetailsDialog = ({
 
     return (
         <Dialog.Root open={open} onOpenChange={handleOpenChange}>
-            <Dialog.Content className='flex max-h-full flex-col sm:max-w-3xl'>
+            <Dialog.Content
+                onOpenAutoFocus={(event) => event.preventDefault()}
+                className='flex max-h-full flex-col sm:max-w-3xl'
+            >
                 <Dialog.Header>
                     <Dialog.Title>{isUpdate ? 'Update Record' : 'Add Record'}</Dialog.Title>
                     <Dialog.Description>

@@ -16,10 +16,13 @@ import Tooltip from '~/components/Tooltip';
 import { useAlertDialog } from '~/context/AlertDialogContext';
 import { useToast } from '~/hooks/useToast';
 import Loading from '~/components/Loading';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import RecordDetailsDialog from '~/feature/record/RecordDetailsDialog';
 import { parseDate, getLocalTimeZone } from '@internationalized/date';
 import dayjs from 'dayjs';
+import { DISPLAY_DATE_FORMAT } from '~/constants';
+import ScrollArea from '~/components/ScrollArea';
+import { GENDER_LABEL, MARITAL_STATUS_LABEL } from '~/feature/record/constants';
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const session = await getServerAuthSession(ctx);
@@ -81,6 +84,16 @@ const RecordSlugPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
                 void utils.record.invalidate();
             },
         });
+    const updateFormValues = useMemo(() => {
+        if (!recordDetails) {
+            return undefined;
+        }
+
+        return {
+            ...recordDetails,
+            birthDate: parseDate(dayjs(recordDetails.birthDate).format('YYYY-MM-DD')),
+        };
+    }, [recordDetails]);
 
     const handleDeleteRecord = async () => {
         const confirmed = await showDialog({
@@ -145,15 +158,61 @@ const RecordSlugPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
                         <span className='hidden sm:block'>Delete</span>
                     </Button>
                 </header>
+                <div className='flex h-full w-full flex-1 flex-col overflow-hidden rounded border border-zinc-200 bg-zinc-50 md:w-96'>
+                    <div className='border-b border-zinc-200 p-4'>
+                        <p className='text-lg font-semibold'>Personal Information</p>
+                    </div>
+                    <ScrollArea.Root className='flex-1'>
+                        <ScrollArea.Viewport>
+                            <div className='flex flex-col gap-3 p-4'>
+                                <div className='flex flex-col'>
+                                    <p className='text-zinc-500'>Name</p>
+                                    <p className='font-medium'>{recordDetails.name}</p>
+                                </div>
+                                <div className='flex flex-col'>
+                                    <p className='text-zinc-500'>Address</p>
+                                    <p className='font-medium'>{recordDetails.address || '-'}</p>
+                                </div>
+                                <div className='flex flex-col'>
+                                    <p className='text-zinc-500'>Birth Date</p>
+                                    <p className='font-medium'>
+                                        {dayjs(recordDetails.birthDate).format(DISPLAY_DATE_FORMAT)}
+                                    </p>
+                                </div>
+                                <div className='flex flex-col'>
+                                    <p className='text-zinc-500'>Gender</p>
+                                    <p className='font-medium'>
+                                        {GENDER_LABEL[recordDetails.gender]}
+                                    </p>
+                                </div>
+                                <div className='flex flex-col'>
+                                    <p className='text-zinc-500'>Marital Status</p>
+                                    <p className='font-medium'>
+                                        {MARITAL_STATUS_LABEL[recordDetails.status]}
+                                    </p>
+                                </div>
+                                <div className='flex flex-col'>
+                                    <p className='text-zinc-500'>Telephone</p>
+                                    <p className='font-medium'>
+                                        {recordDetails.telephone || '-'}
+                                    </p>
+                                </div>
+                                <div className='flex flex-col'>
+                                    <p className='text-zinc-500'>Occupation</p>
+                                    <p className='font-medium'>
+                                        {recordDetails.occupation || '-'}
+                                    </p>
+                                </div>
+                            </div>
+                        </ScrollArea.Viewport>
+                    </ScrollArea.Root>
+                </div>
             </div>
             <RecordDetailsDialog
                 open={showUpdateRecordDialog}
                 onOpenChange={setShowUpdateRecordDialog}
                 loading={isUpdatingRecord}
-                defaultValues={{
-                    ...recordDetails,
-                    birthDate: parseDate(dayjs(recordDetails.birthDate).format('YYYY-MM-DD')),
-                }}
+                defaultValues={updateFormValues}
                 onSubmit={(data) =>
                     updateRecord({
                         ...data,
