@@ -44,4 +44,31 @@ export const recordRouter = createTRPCRouter({
 
             return record;
         }),
+    getRecordDetailsById: clinicProcedure.input(z.string()).query(async ({ ctx, input }) => {
+        return ctx.prisma.record.findUnique({
+            where: { id: input },
+        });
+    }),
+    updateRecord: clinicProcedure
+        .input(
+            addRecordSchema.omit({ birthDate: true }).extend({
+                birthDate: z.date(),
+                recordId: z.string(),
+            })
+        )
+        .mutation(async ({ ctx, input: { recordId, ...data } }) => {
+            const record = await ctx.prisma.record.update({
+                where: { id: recordId },
+                data,
+            });
+
+            return record;
+        }),
+    deleteRecord: clinicProcedure.input(z.string()).mutation(async ({ ctx, input: recordId }) => {
+        const record = await ctx.prisma.record.delete({
+            where: { id: recordId },
+        });
+
+        return record;
+    }),
 });

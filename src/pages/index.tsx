@@ -21,6 +21,7 @@ import Table from '~/components/Table';
 import RecordDetailsDialog from '~/feature/record/RecordDetailsDialog';
 import { useToast } from '~/hooks/useToast';
 import { getLocalTimeZone } from '@internationalized/date';
+import { useRouter } from 'next/router';
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     const session = await getServerAuthSession(ctx);
@@ -66,6 +67,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 const HomePage: NextPageWithLayout<InferGetServerSidePropsType<typeof getServerSideProps>> = ({
     clinicDetails,
 }) => {
+    const router = useRouter();
     const { toast } = useToast();
     const searchInput = useRef<HTMLInputElement>(null);
     const form = useRef<HTMLFormElement>(null);
@@ -78,10 +80,9 @@ const HomePage: NextPageWithLayout<InferGetServerSidePropsType<typeof getServerS
         searchTerm,
     });
     const { mutate: addRecord, isLoading: isAddingRecord } = api.record.addRecord.useMutation({
-        onSuccess: ({ name }) => {
+        onSuccess: async ({ id, name }) => {
             setShowAddRecordDialog(false);
-            // TODO: redirect to record id page
-            // await router.push(`/clinic/${id}`);
+            await router.push(`/record/${id}`);
             toast({
                 title: 'Add Record',
                 description: `Successfully added ${name} to records.`,
@@ -154,7 +155,7 @@ const HomePage: NextPageWithLayout<InferGetServerSidePropsType<typeof getServerS
                             <Table.Row
                                 className='group'
                                 key={record.id}
-                                // onClick={() => void router.push(`/clinic/${clinic.id}`)}
+                                onClick={() => void router.push(`/record/${record.id}`)}
                             >
                                 <Table.Cell className='basis-5/6' isLast={isLast}>
                                     {record.name}

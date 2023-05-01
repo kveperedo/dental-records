@@ -20,9 +20,9 @@ export const MARITAL_STATUS_LABEL: Record<(typeof MARITAL_STATUSES)[number], str
 
 export const addRecordSchema = z.object({
     name: z.string().trim().min(1, 'Name is required'),
-    address: z.string().trim().optional(),
-    telephone: z.string().trim().optional(),
-    occupation: z.string().trim().optional(),
+    address: z.string().trim().nullish(),
+    telephone: z.string().trim().nullish(),
+    occupation: z.string().trim().nullish(),
     gender: z.enum(GENDERS),
     status: z.enum(MARITAL_STATUSES, { required_error: 'Marital status is required' }),
     birthDate: z.custom<CalendarDate>((value) => value instanceof CalendarDate, {
