@@ -31,7 +31,7 @@ const MainLayout = ({ children, className }: MainLayoutProps) => {
                         {sessionData && (
                             <Button
                                 className='my-2'
-                                variant='outline'
+                                variant='ghost'
                                 onClick={() => void signOut()}
                             >
                                 {sessionData.user.image && (
