@@ -1,11 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-import {
-    adminProcedure,
-    createTRPCRouter,
-    protectedProcedure,
-} from '~/server/api/trpc';
+import { adminProcedure, createTRPCRouter, protectedProcedure } from '~/server/api/trpc';
 
 const MAX_NUMBER_OF_CLINICS_PER_QUERY = 20;
 
@@ -55,13 +51,11 @@ export const clinicRouter = createTRPCRouter({
 
             return clinics;
         }),
-    getClinicDetailsById: adminProcedure
-        .input(z.string())
-        .query(async ({ ctx, input }) => {
-            return ctx.prisma.clinic.findUnique({
-                where: { id: input },
-            });
-        }),
+    getClinicDetailsById: adminProcedure.input(z.string()).query(async ({ ctx, input }) => {
+        return ctx.prisma.clinic.findUnique({
+            where: { id: input },
+        });
+    }),
     addClinic: adminProcedure
         .input(
             z.object({
@@ -90,58 +84,52 @@ export const clinicRouter = createTRPCRouter({
 
             return clinic;
         }),
-    deleteClinic: adminProcedure
-        .input(z.string())
-        .mutation(async ({ ctx, input: clinicId }) => {
-            const clinic = await ctx.prisma.clinic.delete({
-                where: { id: clinicId },
-            });
+    deleteClinic: adminProcedure.input(z.string()).mutation(async ({ ctx, input: clinicId }) => {
+        const clinic = await ctx.prisma.clinic.delete({
+            where: { id: clinicId },
+        });
 
-            return clinic;
-        }),
-    listClinicUsersById: adminProcedure
-        .input(z.string())
-        .query(async ({ ctx, input }) => {
-            const users = await ctx.prisma.clinicUser.findMany({
-                where: { clinicId: input },
-                select: {
-                    email: true,
-                    User: {
-                        select: {
-                            name: true,
-                        },
+        return clinic;
+    }),
+    listClinicUsersById: adminProcedure.input(z.string()).query(async ({ ctx, input }) => {
+        const users = await ctx.prisma.clinicUser.findMany({
+            where: { clinicId: input },
+            select: {
+                email: true,
+                User: {
+                    select: {
+                        name: true,
                     },
                 },
-                orderBy: {
-                    User: {
-                        name: 'asc',
-                    },
+            },
+            orderBy: {
+                User: {
+                    name: 'asc',
                 },
+            },
+        });
+
+        return users
+            .map(({ email, User }) => {
+                return { email, name: User?.name ?? null };
+            })
+            .sort((a, b) => {
+                if (a.name === null) {
+                    return 1;
+                }
+
+                if (b.name === null) {
+                    return -1;
+                }
+
+                return 0;
             });
-
-            return users
-                .map(({ email, User }) => {
-                    return { email, name: User?.name ?? null };
-                })
-                .sort((a, b) => {
-                    if (a.name === null) {
-                        return 1;
-                    }
-
-                    if (b.name === null) {
-                        return -1;
-                    }
-
-                    return 0;
-                });
-        }),
-    removeClinicUser: adminProcedure
-        .input(z.string())
-        .mutation(async ({ ctx, input: email }) => {
-            return ctx.prisma.clinicUser.delete({
-                where: { email },
-            });
-        }),
+    }),
+    removeClinicUser: adminProcedure.input(z.string()).mutation(async ({ ctx, input: email }) => {
+        return ctx.prisma.clinicUser.delete({
+            where: { email },
+        });
+    }),
     addClinicUser: adminProcedure
         .input(z.object({ clinicId: z.string(), email: z.string() }))
         .mutation(async ({ ctx, input: { clinicId, email } }) => {
@@ -151,9 +139,16 @@ export const clinicRouter = createTRPCRouter({
                 });
 
                 if (existingUser) {
+                    if (existingUser.clinicId !== clinicId) {
+                        throw new TRPCError({
+                            code: 'INTERNAL_SERVER_ERROR',
+                            message: 'User already belongs to another clinic.',
+                        });
+                    }
+
                     throw new TRPCError({
                         code: 'INTERNAL_SERVER_ERROR',
-                        message: 'User already exists in this clinic.',
+                        message: 'User already belongs to this clinic.',
                     });
                 }
 
