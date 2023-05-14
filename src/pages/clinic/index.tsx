@@ -1,7 +1,7 @@
 import type { GetServerSideProps } from 'next';
 import MainLayout from '~/components/MainLayout';
 import { getServerAuthSession } from '~/server/auth';
-import type { NextPageWithLayout } from './_app';
+import type { NextPageWithLayout } from '../_app';
 import { api } from '~/utils/api';
 import { useRef, useState } from 'react';
 import Pagination from '~/components/Pagination';
