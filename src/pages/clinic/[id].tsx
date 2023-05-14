@@ -210,7 +210,7 @@ const ClinicSlugPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
                         onClick={() => setShowUpdateClinicDialog(true)}
                     >
                         <PencilSimple weight='fill' className='h-4 w-4 sm:hidden' />
-                        <span className='hidden sm:block'>Edit</span>
+                        <span className='hidden sm:block'>Edit Details</span>
                     </Button>
                     <Button
                         className='shrink-0'

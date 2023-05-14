@@ -12,7 +12,7 @@ import { useRef, useState } from 'react';
 import { api } from '~/utils/api';
 import Loading from '~/components/Loading';
 import { Button } from '~/components/Button';
-import { Plus } from '@phosphor-icons/react';
+import { DotsThreeVertical, Eye, Plus, TrashSimple } from '@phosphor-icons/react';
 import ScrollArea from '~/components/ScrollArea';
 import EmptyContent from '~/components/EmptyContent';
 import Pagination from '~/components/Pagination';
@@ -22,6 +22,8 @@ import RecordDetailsDialog from '~/feature/record/RecordDetailsDialog';
 import { useToast } from '~/hooks/useToast';
 import { getLocalTimeZone } from '@internationalized/date';
 import { useRouter } from 'next/router';
+import DropdownMenu from '~/components/DropdownMenu';
+import { useAlertDialog } from '~/context/AlertDialogContext';
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     const session = await getServerAuthSession(ctx);
@@ -68,6 +70,8 @@ const HomePage: NextPageWithLayout<InferGetServerSidePropsType<typeof getServerS
     clinicDetails,
 }) => {
     const router = useRouter();
+    const utils = api.useContext();
+    const showDialog = useAlertDialog();
     const { toast } = useToast();
     const searchInput = useRef<HTMLInputElement>(null);
     const form = useRef<HTMLFormElement>(null);
@@ -89,8 +93,18 @@ const HomePage: NextPageWithLayout<InferGetServerSidePropsType<typeof getServerS
             });
         },
     });
+    const { mutate: deleteRecord, isLoading: isDeletingRecord } =
+        api.record.deleteRecord.useMutation({
+            onSuccess: () => {
+                toast({
+                    title: 'Delete Record',
+                    description: `Successfully deleted record.`,
+                });
+                void utils.record.invalidate();
+            },
+        });
 
-    const areRecordsLoading = isLoading || !data;
+    const areRecordsLoading = isLoading || !data || isDeletingRecord;
     const hasRecords = data && data.length > 0;
     const hasEmptySearchResults = searchTerm.length > 0 && !hasRecords;
 
@@ -108,6 +122,24 @@ const HomePage: NextPageWithLayout<InferGetServerSidePropsType<typeof getServerS
         setSearchTerm('');
         form.current?.reset();
         searchInput.current?.focus();
+    };
+
+    const stopPropagation = (e: React.MouseEvent) => {
+        e.stopPropagation();
+    };
+
+    const handleDeleteRecord = async (id: string) => {
+        const confirmed = await showDialog({
+            title: 'Remove Record?',
+            description:
+                "Are you sure you want to remove this record? All existing info and transactions will be deleted and this action can't be undone.",
+            actionButton: 'Remove Record',
+        });
+
+        if (confirmed) {
+            deleteRecord(id);
+            void router.push('/');
+        }
     };
 
     const renderContent = () => {
@@ -160,17 +192,41 @@ const HomePage: NextPageWithLayout<InferGetServerSidePropsType<typeof getServerS
                                 <Table.Cell className='basis-5/6' isLast={isLast}>
                                     {record.name}
                                 </Table.Cell>
-                                <Table.Cell className='basis-1/6 justify-center' isLast={isLast}>
-                                    <Button
-                                        className='transition-all focus-within:opacity-100 group-hover:opacity-100 sm:opacity-0'
-                                        variant='link'
-                                        onClick={(event) => {
-                                            event.stopPropagation();
-                                            // void handleDeleteClinic(clinic.id);
-                                        }}
-                                    >
-                                        Delete
-                                    </Button>
+                                <Table.Cell className='basis-1/6 justify-end' isLast={isLast}>
+                                    <DropdownMenu.Root>
+                                        <DropdownMenu.Trigger asChild>
+                                            <Button
+                                                className='transition-all focus-within:opacity-100 group-hover:opacity-100 data-[state=open]:opacity-100 sm:opacity-0'
+                                                size='sm'
+                                                variant='secondary'
+                                            >
+                                                <span className='mr-1 hidden sm:block'>
+                                                    Actions
+                                                </span>
+                                                <DotsThreeVertical className='h-4 w-4 text-inherit' />
+                                            </Button>
+                                        </DropdownMenu.Trigger>
+                                        <DropdownMenu.Content align='end'>
+                                            <DropdownMenu.Label>Actions</DropdownMenu.Label>
+                                            <DropdownMenu.Separator />
+                                            <DropdownMenu.Item
+                                                onClick={stopPropagation}
+                                                onSelect={() =>
+                                                    void router.push(`/record/${record.id}`)
+                                                }
+                                            >
+                                                <Eye className='mr-2 h-4 w-4' />
+                                                <span>View record</span>
+                                            </DropdownMenu.Item>
+                                            <DropdownMenu.Item
+                                                onClick={stopPropagation}
+                                                onSelect={() => void handleDeleteRecord(record.id)}
+                                            >
+                                                <TrashSimple className='mr-2 h-4 w-4' />
+                                                <span>Delete</span>
+                                            </DropdownMenu.Item>
+                                        </DropdownMenu.Content>
+                                    </DropdownMenu.Root>
                                 </Table.Cell>
                             </Table.Row>
                         );

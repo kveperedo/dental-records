@@ -1,11 +1,11 @@
 import type { GetServerSideProps } from 'next';
 import MainLayout from '~/components/MainLayout';
 import { getServerAuthSession } from '~/server/auth';
-import type { NextPageWithLayout } from './_app';
+import type { NextPageWithLayout } from '../_app';
 import { api } from '~/utils/api';
 import { useRef, useState } from 'react';
 import Pagination from '~/components/Pagination';
-import { Plus } from '@phosphor-icons/react';
+import { DotsThreeVertical, Eye, Plus, TrashSimple } from '@phosphor-icons/react';
 import ScrollArea from '~/components/ScrollArea';
 import Loading from '~/components/Loading';
 import Head from 'next/head';
@@ -18,6 +18,7 @@ import ClinicDetailsDialog from '~/feature/clinic/ClinicDetailsDialog';
 import { isUserAdmin } from '~/server/utils/isUserAdmin';
 import Table from '~/components/Table';
 import SearchInput from '~/components/SearchInput';
+import DropdownMenu from '~/components/DropdownMenu';
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const session = await getServerAuthSession(ctx);
@@ -82,6 +83,10 @@ const ClinicPage: NextPageWithLayout = () => {
     const areRecordsLoading = isLoading || !data || isDeletingClinic;
     const hasRecords = data && data.length > 0;
     const hasEmptySearchResults = searchTerm.length > 0 && !hasRecords;
+
+    const stopPropagation = (e: React.MouseEvent) => {
+        e.stopPropagation();
+    };
 
     const handleInputReset = () => {
         setSearchTerm('');
@@ -162,17 +167,41 @@ const ClinicPage: NextPageWithLayout = () => {
                                 <Table.Cell className='basis-5/6' isLast={isLast}>
                                     {clinic.name}
                                 </Table.Cell>
-                                <Table.Cell className='basis-1/6 justify-center' isLast={isLast}>
-                                    <Button
-                                        className='transition-all focus-within:opacity-100 group-hover:opacity-100 sm:opacity-0'
-                                        variant='link'
-                                        onClick={(event) => {
-                                            event.stopPropagation();
-                                            void handleDeleteClinic(clinic.id);
-                                        }}
-                                    >
-                                        Delete
-                                    </Button>
+                                <Table.Cell className='basis-1/6 justify-end' isLast={isLast}>
+                                    <DropdownMenu.Root>
+                                        <DropdownMenu.Trigger asChild>
+                                            <Button
+                                                className='transition-all focus-within:opacity-100 group-hover:opacity-100 data-[state=open]:opacity-100 sm:opacity-0'
+                                                size='sm'
+                                                variant='secondary'
+                                            >
+                                                <span className='mr-1 hidden sm:block'>
+                                                    Actions
+                                                </span>
+                                                <DotsThreeVertical className='h-4 w-4 text-inherit' />
+                                            </Button>
+                                        </DropdownMenu.Trigger>
+                                        <DropdownMenu.Content align='end'>
+                                            <DropdownMenu.Label>Actions</DropdownMenu.Label>
+                                            <DropdownMenu.Separator />
+                                            <DropdownMenu.Item
+                                                onClick={stopPropagation}
+                                                onSelect={() =>
+                                                    void router.push(`/clinic/${clinic.id}`)
+                                                }
+                                            >
+                                                <Eye className='mr-2 h-4 w-4' />
+                                                <span>View clinic</span>
+                                            </DropdownMenu.Item>
+                                            <DropdownMenu.Item
+                                                onClick={stopPropagation}
+                                                onSelect={() => void handleDeleteClinic(clinic.id)}
+                                            >
+                                                <TrashSimple className='mr-2 h-4 w-4' />
+                                                <span>Delete</span>
+                                            </DropdownMenu.Item>
+                                        </DropdownMenu.Content>
+                                    </DropdownMenu.Root>
                                 </Table.Cell>
                             </Table.Row>
                         );
