@@ -6,6 +6,8 @@ import Image from 'next/image';
 import AnchorLinks from './AnchorLinks';
 import { api } from '~/utils/api';
 import { Button } from './Button';
+import DropdownMenu from './DropdownMenu';
+import { SignOut } from '@phosphor-icons/react';
 
 type MainLayoutProps = PropsWithChildren<{
     showHeader?: boolean;
@@ -29,22 +31,32 @@ const MainLayout = ({ children, className }: MainLayoutProps) => {
                     <div className='container mx-auto flex items-stretch justify-between px-2 sm:px-0'>
                         <AnchorLinks isAdmin={isAdmin} />
                         {sessionData && (
-                            <Button
-                                className='my-2'
-                                variant='ghost'
-                                onClick={() => void signOut()}
-                            >
-                                {sessionData.user.image && (
-                                    <Image
-                                        className='mr-2 rounded-full'
-                                        src={sessionData.user.image}
-                                        alt='user image'
-                                        width={24}
-                                        height={24}
-                                    />
-                                )}
-                                <span>Sign out</span>
-                            </Button>
+                            <DropdownMenu.Root>
+                                <DropdownMenu.Trigger asChild>
+                                    <Button className='my-2' variant='ghost'>
+                                        {sessionData.user.image && (
+                                            <Image
+                                                className='mr-2 rounded-full'
+                                                src={sessionData.user.image}
+                                                alt='user image'
+                                                width={24}
+                                                height={24}
+                                            />
+                                        )}
+                                        <p>{sessionData.user.name}</p>
+                                    </Button>
+                                </DropdownMenu.Trigger>
+                                <DropdownMenu.Content className='w-44' align='end'>
+                                    <DropdownMenu.Label>My Account</DropdownMenu.Label>
+                                    <DropdownMenu.Separator />
+                                    <DropdownMenu.Item
+                                        onSelect={() => void signOut()}
+                                    >
+                                        <SignOut className='mr-2 h-4 w-4' />
+                                        <span>Sign out</span>
+                                    </DropdownMenu.Item>
+                                </DropdownMenu.Content>
+                            </DropdownMenu.Root>
                         )}
                     </div>
                 </header>
